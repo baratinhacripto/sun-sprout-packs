@@ -42,30 +42,30 @@ function ComparisonBar({
   const ratio = Math.round((sunflower / lettuce) * 10) / 10;
 
   return (
-    <div className="mb-2">
+    <div className="mb-1.5">
       <div className="flex justify-between items-baseline mb-0.5">
         <span className="text-[7px] font-semibold text-green-deep uppercase tracking-wide">{label}</span>
         <span className="text-[6px] text-gold-dark font-bold">{ratio}×</span>
       </div>
       <div className="flex items-center gap-1">
-        <div className="flex-1 h-2 rounded-full bg-cream-dark overflow-hidden">
+        <div className="flex-1 h-[5px] rounded-full bg-cream-dark overflow-hidden">
           <div
             className="h-full rounded-full pkg-gold-gradient"
             style={{ width: `${sfPct}%` }}
           />
         </div>
-        <span className="text-[6px] text-green-deep w-10 text-right">
+        <span className="text-[5.5px] text-green-deep w-8 text-right">
           {sunflower}{unit}
         </span>
       </div>
       <div className="flex items-center gap-1">
-        <div className="flex-1 h-2 rounded-full bg-cream-dark overflow-hidden">
+        <div className="flex-1 h-[5px] rounded-full bg-cream-dark overflow-hidden">
           <div
             className="h-full rounded-full bg-muted-foreground/40"
             style={{ width: `${ltPct}%` }}
           />
         </div>
-        <span className="text-[6px] text-muted-foreground w-10 text-right">
+        <span className="text-[5.5px] text-muted-foreground w-8 text-right">
           {lettuce}{unit}
         </span>
       </div>
@@ -88,28 +88,28 @@ function NutritionRow({
 }) {
   return (
     <div
-      className={`flex justify-between items-center py-[3px] ${
+      className={`flex justify-between items-center py-[2px] ${
         !last ? "border-b border-green-deep/10" : ""
       }`}
     >
-      <span className="text-[7px] text-green-deep">{nutrient}</span>
+      <span className="text-[6.5px] text-green-deep">{nutrient}</span>
       <div className="flex gap-2 items-center">
-        <span className="text-[7px] font-semibold text-green-deep">
+        <span className="text-[6.5px] font-semibold text-green-deep">
           {per100} {unit}
         </span>
-        <span className="text-[6px] text-muted-foreground w-6 text-right">{dv}</span>
+        <span className="text-[5.5px] text-muted-foreground w-5 text-right">{dv}</span>
       </div>
     </div>
   );
 }
 
-// ─── Panel: Top (visible from above the box) ─────────────────────────────────
+// ─── Panel: Arte (topo da caixa) ─────────────────────────────────────────────
 
-function TopPanel() {
+function ArtPanel() {
   return (
     <div
       className="relative overflow-hidden flex-shrink-0"
-      style={{ width: "13cm", height: "10cm" }}
+      style={{ width: "13cm", height: "9cm" }}
     >
       {/* Full bleed image */}
       <img
@@ -117,17 +117,16 @@ function TopPanel() {
         alt="Microverdes de girassol"
         className="absolute inset-0 w-full h-full object-cover"
       />
-      {/* Gradient overlay bottom */}
+      {/* Gradient overlay */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(to bottom, hsl(142 52% 12% / 0.15) 0%, hsl(142 52% 12% / 0.65) 55%, hsl(142 52% 10% / 0.92) 100%)",
+            "linear-gradient(to bottom, hsl(142 52% 12% / 0.1) 0%, hsl(142 52% 12% / 0.5) 50%, hsl(142 52% 10% / 0.9) 100%)",
         }}
       />
       {/* Content */}
       <div className="absolute bottom-0 left-0 right-0 pb-4 pt-2 px-4 text-center">
-        {/* Gold accent line */}
         <div
           className="mx-auto mb-2 rounded-full pkg-gold-gradient"
           style={{ width: "3cm", height: "1.5px" }}
@@ -156,7 +155,6 @@ function TopPanel() {
         >
           sem agrotóxicos
         </p>
-        {/* Small organic badge */}
         <div
           className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full border"
           style={{
@@ -173,15 +171,15 @@ function TopPanel() {
   );
 }
 
-// ─── Panel: Nutrition Info (front/back) ──────────────────────────────────────
+// ─── Panel: Informações Nutricionais (fundo da caixa) ────────────────────────
 
-function NutritionPanel({ side }: { side: "frente" | "verso" }) {
+function NutritionPanel() {
   return (
     <div
       className="relative overflow-hidden flex-shrink-0 flex flex-col"
       style={{
-        width: "12cm",
-        height: "10cm",
+        width: "13cm",
+        height: "9cm",
         background: "hsl(var(--cream))",
       }}
     >
@@ -189,13 +187,11 @@ function NutritionPanel({ side }: { side: "frente" | "verso" }) {
       <div className="absolute inset-0 diagonal-stripe opacity-60" />
 
       {/* Top header bar */}
-      <div
-        className="relative z-10 px-3 py-2 pkg-green-gradient flex items-center gap-2"
-      >
+      <div className="relative z-10 px-3 py-1.5 pkg-green-gradient flex items-center gap-2">
         <div className="flex flex-col">
           <span
             className="font-cursive"
-            style={{ fontSize: "11pt", color: "hsl(var(--gold-light))" }}
+            style={{ fontSize: "10pt", color: "hsl(var(--gold-light))" }}
           >
             microverdes de girassol
           </span>
@@ -206,213 +202,108 @@ function NutritionPanel({ side }: { side: "frente" | "verso" }) {
             sem agrotóxicos
           </span>
         </div>
-        <div className="ml-auto text-right">
-          <span
-            className="font-body uppercase"
-            style={{ fontSize: "5pt", color: "hsl(0 0% 100% / 0.5)" }}
-          >
-            {side === "frente" ? "PAINEL FRONTAL" : "PAINEL TRASEIRO"}
-          </span>
-        </div>
       </div>
 
       {/* Gold accent line */}
       <div className="relative z-10 h-[2px] pkg-gold-gradient" />
 
-      {/* Content body */}
-      <div className="relative z-10 flex flex-1 gap-2 px-2 py-2 overflow-hidden">
-        {side === "frente" ? (
-          <>
-            {/* Nutrition table */}
-            <div className="flex-1">
-              <div
-                className="font-body font-bold uppercase text-green-deep mb-1 pb-0.5"
-                style={{ fontSize: "7pt", letterSpacing: "0.08em", borderBottom: "1.5px solid hsl(var(--green-deep))" }}
-              >
-                Informação Nutricional
-              </div>
-              <div
-                className="font-body text-muted-foreground mb-1"
-                style={{ fontSize: "6pt" }}
-              >
-                Porção de 50g · Por 100g
-              </div>
-              <div
-                className="font-body text-right text-muted-foreground mb-0.5"
-                style={{ fontSize: "6pt" }}
-              >
-                %VD*
-              </div>
-              {nutritionTable.map((row, i) => (
-                <NutritionRow
-                  key={row.nutrient}
-                  {...row}
-                  last={i === nutritionTable.length - 1}
-                />
-              ))}
-              <p
-                className="font-body text-muted-foreground mt-1"
-                style={{ fontSize: "5pt" }}
-              >
-                *% Valores Diários com base numa dieta de 2.000 kcal.
-              </p>
+      {/* Content body — two columns */}
+      <div className="relative z-10 flex flex-1 gap-2 px-2 py-1.5 overflow-hidden">
+        {/* LEFT: Nutrition table */}
+        <div className="flex-1">
+          <div
+            className="font-body font-bold uppercase text-green-deep mb-0.5 pb-0.5"
+            style={{ fontSize: "6.5pt", letterSpacing: "0.08em", borderBottom: "1.5px solid hsl(var(--green-deep))" }}
+          >
+            Informação Nutricional
+          </div>
+          <div
+            className="font-body text-muted-foreground mb-0.5"
+            style={{ fontSize: "5.5pt" }}
+          >
+            Porção de 50g · Por 100g
+          </div>
+          <div
+            className="font-body text-right text-muted-foreground mb-0.5"
+            style={{ fontSize: "5pt" }}
+          >
+            %VD*
+          </div>
+          {nutritionTable.map((row, i) => (
+            <NutritionRow
+              key={row.nutrient}
+              {...row}
+              last={i === nutritionTable.length - 1}
+            />
+          ))}
+          <p
+            className="font-body text-muted-foreground mt-0.5"
+            style={{ fontSize: "4.5pt" }}
+          >
+            *% Valores Diários com base numa dieta de 2.000 kcal.
+          </p>
+        </div>
+
+        {/* Vertical divider */}
+        <div className="w-px bg-green-deep/15" />
+
+        {/* RIGHT: Comparison + highlights */}
+        <div className="flex-1 flex flex-col">
+          <div
+            className="font-body font-bold uppercase text-green-deep mb-0.5 pb-0.5"
+            style={{ fontSize: "6.5pt", letterSpacing: "0.08em", borderBottom: "1.5px solid hsl(var(--green-deep))" }}
+          >
+            Comparativo × Alface
+          </div>
+
+          {/* Legend */}
+          <div className="flex gap-3 mb-1">
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-1.5 rounded-sm pkg-gold-gradient" />
+              <span className="font-body font-semibold text-green-deep" style={{ fontSize: "5pt" }}>
+                Microverdes
+              </span>
             </div>
-
-            {/* Vertical divider */}
-            <div className="w-px bg-green-deep/15 mx-1" />
-
-            {/* Highlights */}
-            <div className="w-20 flex-shrink-0">
-              <div
-                className="font-body font-bold uppercase text-green-deep mb-2"
-                style={{ fontSize: "6pt", letterSpacing: "0.08em" }}
-              >
-                Destaques
-              </div>
-              {[
-                { icon: "💪", label: "Rico em Proteínas", val: "4g/100g" },
-                { icon: "🌿", label: "Alto em Fibras", val: "2,1g/100g" },
-                { icon: "✨", label: "Vit. E Potente", val: "19% VD" },
-                { icon: "🩸", label: "Fonte de Ferro", val: "13% VD" },
-                { icon: "🧬", label: "Folato Natural", val: "20% VD" },
-              ].map((h) => (
-                <div
-                  key={h.label}
-                  className="mb-1.5 p-1 rounded"
-                  style={{ background: "hsl(var(--green-light) / 0.6)" }}
-                >
-                  <div className="flex items-center gap-1">
-                    <span style={{ fontSize: "8pt" }}>{h.icon}</span>
-                    <div>
-                      <div
-                        className="font-body font-semibold text-green-deep leading-tight"
-                        style={{ fontSize: "5.5pt" }}
-                      >
-                        {h.label}
-                      </div>
-                      <div
-                        className="font-body text-gold-dark font-bold"
-                        style={{ fontSize: "5.5pt" }}
-                      >
-                        {h.val}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-1.5 rounded-sm bg-muted-foreground/40" />
+              <span className="font-body text-muted-foreground" style={{ fontSize: "5pt" }}>
+                Alface
+              </span>
             </div>
-          </>
-        ) : (
-          <>
-            {/* Comparison with lettuce */}
-            <div className="flex-1">
+          </div>
+
+          {comparisonData.map((c) => (
+            <ComparisonBar key={c.label} {...c} />
+          ))}
+
+          {/* Key stats */}
+          <div className="mt-auto flex gap-1">
+            {[
+              { stat: "40×", desc: "mais nutrientes" },
+              { stat: "2.8×", desc: "mais proteínas" },
+              { stat: "9×", desc: "mais vit. E" },
+            ].map((s) => (
               <div
-                className="font-body font-bold uppercase text-green-deep mb-0.5 pb-0.5"
-                style={{ fontSize: "7pt", letterSpacing: "0.08em", borderBottom: "1.5px solid hsl(var(--green-deep))" }}
-              >
-                Comparativo Nutricional
-              </div>
-              <div
-                className="font-body text-muted-foreground mb-2"
-                style={{ fontSize: "6pt" }}
-              >
-                por 100g
-              </div>
-
-              {/* Legend */}
-              <div className="flex gap-3 mb-2">
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-2 rounded-sm pkg-gold-gradient" />
-                  <span className="font-body font-semibold text-green-deep" style={{ fontSize: "6pt" }}>
-                    Microverdes de Girassol
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-2 rounded-sm bg-muted-foreground/40" />
-                  <span className="font-body text-muted-foreground" style={{ fontSize: "6pt" }}>
-                    Alface
-                  </span>
-                </div>
-              </div>
-
-              {comparisonData.map((c) => (
-                <ComparisonBar key={c.label} {...c} />
-              ))}
-
-              <div
-                className="font-body text-muted-foreground mt-1"
-                style={{ fontSize: "5pt" }}
-              >
-                Fontes: TACO/IBGE · USDA FoodData Central
-              </div>
-            </div>
-
-            {/* Vertical divider */}
-            <div className="w-px bg-green-deep/15 mx-1" />
-
-            {/* Side info */}
-            <div className="w-24 flex-shrink-0 flex flex-col gap-2">
-              <div
-                className="font-body font-bold uppercase text-green-deep mb-1"
-                style={{ fontSize: "6pt", letterSpacing: "0.08em" }}
-              >
-                Por que escolher?
-              </div>
-
-              {[
-                {
-                  stat: "40×",
-                  desc: "mais nutrientes que vegetais maduros",
-                },
-                {
-                  stat: "2.8×",
-                  desc: "mais proteínas que a alface",
-                },
-                {
-                  stat: "9×",
-                  desc: "mais vitamina E que a alface",
-                },
-              ].map((s) => (
-                <div
-                  key={s.stat}
-                  className="p-1.5 rounded text-center"
-                  style={{ background: "hsl(var(--primary) / 0.06)", border: "1px solid hsl(var(--green-deep) / 0.15)" }}
-                >
-                  <div
-                    className="font-cursive text-gold-dark font-bold leading-tight"
-                    style={{ fontSize: "16pt" }}
-                  >
-                    {s.stat}
-                  </div>
-                  <div
-                    className="font-body text-green-deep leading-tight"
-                    style={{ fontSize: "5.5pt" }}
-                  >
-                    {s.desc}
-                  </div>
-                </div>
-              ))}
-
-              <div
-                className="mt-auto p-1 rounded text-center"
-                style={{ background: "hsl(var(--gold) / 0.12)", border: "1px solid hsl(var(--gold) / 0.3)" }}
+                key={s.stat}
+                className="flex-1 p-1 rounded text-center"
+                style={{ background: "hsl(var(--primary) / 0.06)", border: "1px solid hsl(var(--green-deep) / 0.15)" }}
               >
                 <div
-                  className="font-body text-gold-dark"
-                  style={{ fontSize: "5pt" }}
+                  className="font-cursive text-gold-dark font-bold leading-tight"
+                  style={{ fontSize: "11pt" }}
                 >
-                  🌱 Produto fresco
+                  {s.stat}
                 </div>
                 <div
-                  className="font-body text-green-deep font-semibold"
-                  style={{ fontSize: "5.5pt" }}
+                  className="font-body text-green-deep leading-tight"
+                  style={{ fontSize: "4.5pt" }}
                 >
-                  Consumir em até 5 dias
+                  {s.desc}
                 </div>
               </div>
-            </div>
-          </>
-        )}
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Bottom strip */}
@@ -424,9 +315,45 @@ function NutritionPanel({ side }: { side: "frente" | "verso" }) {
           Conservar refrigerado entre 2°C e 8°C
         </span>
         <span className="font-body text-muted-foreground" style={{ fontSize: "5pt" }}>
+          🌱 Produto fresco · Consumir em até 5 dias
+        </span>
+        <span className="font-body text-muted-foreground" style={{ fontSize: "5pt" }}>
           Val.: Ver embalagem
         </span>
       </div>
+    </div>
+  );
+}
+
+// ─── Side connector panel ─────────────────────────────────────────────────────
+
+function SidePanel({ label }: { label: string }) {
+  return (
+    <div
+      className="relative flex-shrink-0 flex items-center justify-center pkg-green-gradient"
+      style={{ width: "3.5cm", height: "9cm" }}
+    >
+      <span
+        className="font-cursive text-center"
+        style={{
+          fontSize: "9pt",
+          color: "hsl(var(--gold-light))",
+          writingMode: "vertical-rl",
+          textOrientation: "mixed",
+          transform: "rotate(180deg)",
+        }}
+      >
+        microverdes de girassol
+      </span>
+      {/* Gold edge lines */}
+      <div
+        className="absolute top-0 bottom-0 left-0 w-px"
+        style={{ background: "hsl(var(--gold) / 0.5)" }}
+      />
+      <div
+        className="absolute top-0 bottom-0 right-0 w-px"
+        style={{ background: "hsl(var(--gold) / 0.5)" }}
+      />
     </div>
   );
 }
@@ -435,7 +362,7 @@ function NutritionPanel({ side }: { side: "frente" | "verso" }) {
 
 export default function PackagingSleeve() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-green-light/20 to-cream-dark flex flex-col items-center justify-center py-10 px-4 gap-10">
+    <div className="min-h-screen bg-gradient-to-br from-background via-green-light/20 to-cream-dark flex flex-col items-center justify-center py-10 px-4 gap-8">
       {/* Header */}
       <div className="text-center animate-fade-up">
         <p
@@ -448,7 +375,7 @@ export default function PackagingSleeve() {
           Sleeve · Microverdes de Girassol
         </h2>
         <p className="font-body text-muted-foreground mt-1" style={{ fontSize: "8pt" }}>
-          37 cm × 10 cm · Caixa plástica clamshell
+          33 cm × 9 cm · Caixa plástica clamshell
         </p>
       </div>
 
@@ -457,29 +384,17 @@ export default function PackagingSleeve() {
         className="pkg-shadow rounded overflow-hidden animate-fade-up"
         style={{ animationDelay: "0.15s", display: "flex" }}
       >
-        {/* LEFT: Painel Traseiro */}
-        <div className="panel-fold-line">
-          <NutritionPanel side="verso" />
-        </div>
+        {/* Nutrition (bottom of box) */}
+        <NutritionPanel />
 
-        {/* CENTER: Painel Superior (topo da caixa) */}
-        <div className="relative">
-          {/* Fold markers */}
-          <div
-            className="absolute top-0 bottom-0 left-0 w-px z-20"
-            style={{ background: "hsl(var(--gold) / 0.6)", boxShadow: "0 0 4px hsl(var(--gold) / 0.4)" }}
-          />
-          <div
-            className="absolute top-0 bottom-0 right-0 w-px z-20"
-            style={{ background: "hsl(var(--gold) / 0.6)", boxShadow: "0 0 4px hsl(var(--gold) / 0.4)" }}
-          />
-          <TopPanel />
-        </div>
+        {/* Left side connector */}
+        <SidePanel label="esquerda" />
 
-        {/* RIGHT: Painel Frontal */}
-        <div className="panel-fold-line">
-          <NutritionPanel side="frente" />
-        </div>
+        {/* Art (top of box) */}
+        <ArtPanel />
+
+        {/* Right side connector */}
+        <SidePanel label="direita" />
       </div>
 
       {/* Fold guide labels */}
@@ -487,33 +402,36 @@ export default function PackagingSleeve() {
         className="flex gap-0 animate-fade-up"
         style={{ animationDelay: "0.3s" }}
       >
-        <div className="flex flex-col items-center" style={{ width: "12cm" }}>
+        <div className="flex flex-col items-center" style={{ width: "13cm" }}>
           <div className="w-full h-px bg-green-deep/20 mb-1" />
           <span className="font-body uppercase text-muted-foreground" style={{ fontSize: "6pt", letterSpacing: "0.15em" }}>
-            ← Painel Traseiro (verso) →
+            ← Fundo (info nutricional) →
+          </span>
+        </div>
+        <div className="flex flex-col items-center" style={{ width: "3.5cm" }}>
+          <div className="w-full h-px bg-gold/60 mb-1" />
+          <span className="font-body uppercase text-gold-dark" style={{ fontSize: "5pt" }}>
+            Lateral
           </span>
         </div>
         <div className="flex flex-col items-center" style={{ width: "13cm" }}>
           <div className="w-full h-px bg-gold/60 mb-1" />
           <span className="font-body uppercase text-gold-dark font-semibold" style={{ fontSize: "6pt", letterSpacing: "0.15em" }}>
-            ← Painel Superior (topo) →
+            ← Topo (arte principal) →
           </span>
         </div>
-        <div className="flex flex-col items-center" style={{ width: "12cm" }}>
-          <div className="w-full h-px bg-green-deep/20 mb-1" />
-          <span className="font-body uppercase text-muted-foreground" style={{ fontSize: "6pt", letterSpacing: "0.15em" }}>
-            ← Painel Frontal (frente) →
+        <div className="flex flex-col items-center" style={{ width: "3.5cm" }}>
+          <div className="w-full h-px bg-gold/60 mb-1" />
+          <span className="font-body uppercase text-gold-dark" style={{ fontSize: "5pt" }}>
+            Lateral
           </span>
         </div>
       </div>
 
-      {/* 3D mockup hint */}
-      <div
-        className="text-center animate-fade-up"
-        style={{ animationDelay: "0.45s" }}
-      >
+      {/* Info */}
+      <div className="text-center animate-fade-up" style={{ animationDelay: "0.45s" }}>
         <p className="font-body text-muted-foreground" style={{ fontSize: "7pt" }}>
-          As linhas douradas indicam as dobras do sleeve. Escala real: 37cm × 10cm.
+          Segure na horizontal → Arte no topo · Vire 180° → Informações nutricionais no fundo
         </p>
       </div>
     </div>
