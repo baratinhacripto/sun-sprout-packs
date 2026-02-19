@@ -109,7 +109,7 @@ function ArtPanel() {
   return (
     <div
       className="relative overflow-hidden flex-shrink-0"
-      style={{ width: "13cm", height: "9cm" }}
+      style={{ width: "9cm", height: "13cm" }}
     >
       {/* Full bleed image */}
       <img
@@ -178,8 +178,8 @@ function NutritionPanel() {
     <div
       className="relative overflow-hidden flex-shrink-0 flex flex-col"
       style={{
-        width: "13cm",
-        height: "9cm",
+        width: "9cm",
+        height: "13cm",
         background: "hsl(var(--cream))",
       }}
     >
@@ -331,27 +331,24 @@ function SidePanel({ label }: { label: string }) {
   return (
     <div
       className="relative flex-shrink-0 flex items-center justify-center pkg-green-gradient"
-      style={{ width: "3.5cm", height: "9cm" }}
+      style={{ width: "9cm", height: "3.5cm" }}
     >
       <span
         className="font-cursive text-center"
         style={{
           fontSize: "9pt",
           color: "hsl(var(--gold-light))",
-          writingMode: "vertical-rl",
-          textOrientation: "mixed",
-          transform: "rotate(180deg)",
         }}
       >
         microverdes de girassol
       </span>
       {/* Gold edge lines */}
       <div
-        className="absolute top-0 bottom-0 left-0 w-px"
+        className="absolute left-0 right-0 top-0 h-px"
         style={{ background: "hsl(var(--gold) / 0.5)" }}
       />
       <div
-        className="absolute top-0 bottom-0 right-0 w-px"
+        className="absolute left-0 right-0 bottom-0 h-px"
         style={{ background: "hsl(var(--gold) / 0.5)" }}
       />
     </div>
@@ -379,50 +376,46 @@ export default function PackagingSleeve() {
         </p>
       </div>
 
-      {/* Sleeve unfolded — horizontal strip */}
+      {/* Sleeve unfolded — vertical strip (like Mimo) */}
       <div
-        className="pkg-shadow rounded overflow-hidden animate-fade-up"
-        style={{ animationDelay: "0.15s", display: "flex" }}
+        className="pkg-shadow rounded overflow-hidden animate-fade-up flex flex-col"
+        style={{ animationDelay: "0.15s" }}
       >
-        {/* Nutrition (bottom of box) */}
-        <NutritionPanel />
-
-        {/* Left side connector */}
-        <SidePanel label="esquerda" />
-
-        {/* Art (top of box) */}
+        {/* Art (top of box — visible face) */}
         <ArtPanel />
 
-        {/* Right side connector */}
-        <SidePanel label="direita" />
+        {/* Top side connector */}
+        <SidePanel label="lateral superior" />
+
+        {/* Nutrition (bottom of box — flip 180°) */}
+        <NutritionPanel />
+
+        {/* Bottom side connector */}
+        <SidePanel label="lateral inferior" />
       </div>
 
       {/* Fold guide labels */}
       <div
-        className="flex gap-0 animate-fade-up"
-        style={{ animationDelay: "0.3s" }}
+        className="flex flex-col items-center gap-0 animate-fade-up"
+        style={{ animationDelay: "0.3s", width: "9cm" }}
       >
-        <div className="flex flex-col items-center" style={{ width: "13cm" }}>
-          <div className="w-full h-px bg-green-deep/20 mb-1" />
-          <span className="font-body uppercase text-muted-foreground" style={{ fontSize: "6pt", letterSpacing: "0.15em" }}>
-            ← Fundo (info nutricional) →
+        <div className="flex items-center w-full" style={{ height: "13cm" }}>
+          <span className="font-body uppercase text-gold-dark font-semibold" style={{ fontSize: "6pt", letterSpacing: "0.15em", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+            ↑ Topo (arte principal) ↓
           </span>
         </div>
-        <div className="flex flex-col items-center" style={{ width: "3.5cm" }}>
-          <div className="w-full h-px bg-gold/60 mb-1" />
-          <span className="font-body uppercase text-gold-dark" style={{ fontSize: "5pt" }}>
+        <div className="flex items-center w-full" style={{ height: "3.5cm" }}>
+          <span className="font-body uppercase text-gold-dark" style={{ fontSize: "5pt", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
             Lateral
           </span>
         </div>
-        <div className="flex flex-col items-center" style={{ width: "13cm" }}>
-          <div className="w-full h-px bg-gold/60 mb-1" />
-          <span className="font-body uppercase text-gold-dark font-semibold" style={{ fontSize: "6pt", letterSpacing: "0.15em" }}>
-            ← Topo (arte principal) →
+        <div className="flex items-center w-full" style={{ height: "13cm" }}>
+          <span className="font-body uppercase text-muted-foreground" style={{ fontSize: "6pt", letterSpacing: "0.15em", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+            ↑ Fundo (info nutricional) ↓
           </span>
         </div>
-        <div className="flex flex-col items-center" style={{ width: "3.5cm" }}>
-          <div className="w-full h-px bg-gold/60 mb-1" />
-          <span className="font-body uppercase text-gold-dark" style={{ fontSize: "5pt" }}>
+        <div className="flex items-center w-full" style={{ height: "3.5cm" }}>
+          <span className="font-body uppercase text-gold-dark" style={{ fontSize: "5pt", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
             Lateral
           </span>
         </div>
@@ -431,7 +424,7 @@ export default function PackagingSleeve() {
       {/* Info */}
       <div className="text-center animate-fade-up" style={{ animationDelay: "0.45s" }}>
         <p className="font-body text-muted-foreground" style={{ fontSize: "7pt" }}>
-          Segure na horizontal → Arte no topo · Vire 180° → Informações nutricionais no fundo
+          Arte no topo · Vire 180° na horizontal → Informações nutricionais no fundo
         </p>
       </div>
     </div>
