@@ -224,7 +224,7 @@ function NutritionPanel() {
             className="font-body text-muted-foreground mb-0.5"
             style={{ fontSize: "5.5pt" }}
           >
-            Porção de 50g · Por 100g
+            Porção de 100g
           </div>
           <div
             className="font-body text-right text-muted-foreground mb-0.5"
