@@ -1,4 +1,7 @@
+import { useRef, useCallback, useState } from "react";
+import html2canvas from "html2canvas";
 import sunflowerImg from "@/assets/sunflower-micro.jpg";
+import { Download } from "lucide-react";
 
 // ─── Nutritional data ────────────────────────────────────────────────────────
 const nutritionTable = [
@@ -358,6 +361,37 @@ function SidePanel({ label }: { label: string }) {
 // ─── Main Packaging Component ─────────────────────────────────────────────────
 
 export default function PackagingSleeve() {
+  const sleeveRef = useRef<HTMLDivElement>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = useCallback(async () => {
+    if (!sleeveRef.current) return;
+    setExporting(true);
+    try {
+      // 33cm x 9cm at 300dpi → 3898 x 1063 pixels (rotated: 1063 x 3898)
+      const targetW = 1063; // 9cm
+      const targetH = 3898; // 33cm
+      const el = sleeveRef.current;
+      const scale = targetH / el.offsetHeight;
+
+      const canvas = await html2canvas(el, {
+        scale,
+        useCORS: true,
+        backgroundColor: null,
+        logging: false,
+      });
+
+      const link = document.createElement("a");
+      link.download = "sleeve-microverdes-girassol-300dpi.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch (err) {
+      console.error("Export failed:", err);
+    } finally {
+      setExporting(false);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-green-light/20 to-cream-dark flex flex-col items-center justify-center py-10 px-4 gap-8">
       {/* Header */}
@@ -376,21 +410,26 @@ export default function PackagingSleeve() {
         </p>
       </div>
 
+      {/* Export button */}
+      <button
+        onClick={handleExport}
+        disabled={exporting}
+        className="flex items-center gap-2 px-4 py-2 rounded-full font-body text-sm font-semibold transition-all pkg-green-gradient hover:opacity-90 disabled:opacity-50"
+        style={{ color: "hsl(var(--gold-light))" }}
+      >
+        <Download size={16} />
+        {exporting ? "Exportando…" : "Baixar PNG (300dpi)"}
+      </button>
+
       {/* Sleeve unfolded — vertical strip (like Mimo) */}
       <div
+        ref={sleeveRef}
         className="pkg-shadow rounded overflow-hidden animate-fade-up flex flex-col"
         style={{ animationDelay: "0.15s" }}
       >
-        {/* Art (top of box — visible face) */}
         <ArtPanel />
-
-        {/* Top side connector */}
         <SidePanel label="lateral superior" />
-
-        {/* Nutrition (bottom of box — flip 180°) */}
         <NutritionPanel />
-
-        {/* Bottom side connector */}
         <SidePanel label="lateral inferior" />
       </div>
 
