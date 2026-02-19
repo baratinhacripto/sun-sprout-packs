@@ -435,87 +435,91 @@ function NutritionPanel({ side }: { side: "frente" | "verso" }) {
 
 export default function PackagingSleeve() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-green-light/20 to-cream-dark flex flex-col items-center justify-center py-10 px-4 gap-10">
+    <div className="min-h-screen bg-gradient-to-br from-background via-green-light/20 to-cream-dark flex flex-col items-center justify-center py-10 px-4 gap-10 overflow-x-hidden">
       {/* Header */}
       <div className="text-center animate-fade-up">
         <p
           className="font-body uppercase tracking-widest text-muted-foreground mb-1"
           style={{ fontSize: "9pt", letterSpacing: "0.25em" }}
         >
-          Mockup de Embalagem
+          Mockup de Embalagem · Vista da Prateleira
         </p>
         <h2 className="font-cursive text-green-deep" style={{ fontSize: "28pt" }}>
           Sleeve · Microverdes de Girassol
         </h2>
         <p className="font-body text-muted-foreground mt-1" style={{ fontSize: "8pt" }}>
-          37 cm × 10 cm · Caixa plástica clamshell
+          37 cm × 10 cm · Caixa plástica clamshell · girado 90° como na prateleira
         </p>
       </div>
 
-      {/* Sleeve unfolded — horizontal strip */}
-      <div
-        className="pkg-shadow rounded overflow-hidden animate-fade-up"
-        style={{ animationDelay: "0.15s", display: "flex" }}
-      >
-        {/* LEFT: Painel Traseiro */}
-        <div className="panel-fold-line">
-          <NutritionPanel side="verso" />
-        </div>
-
-        {/* CENTER: Painel Superior (topo da caixa) */}
-        <div className="relative">
-          {/* Fold markers */}
+      {/* Wrapper that rotates the entire sleeve 90° (como aparece na prateleira) */}
+      <div className="animate-fade-up" style={{ animationDelay: "0.15s" }}>
+        {/* outer container sized to the ROTATED dimensions so it takes correct space */}
+        <div
+          style={{
+            width: "10cm",   /* after rotation: height becomes width */
+            height: "37cm",  /* after rotation: width becomes height */
+            position: "relative",
+          }}
+        >
+          {/* The strip, rotated -90deg around its own center */}
           <div
-            className="absolute top-0 bottom-0 left-0 w-px z-20"
-            style={{ background: "hsl(var(--gold) / 0.6)", boxShadow: "0 0 4px hsl(var(--gold) / 0.4)" }}
-          />
-          <div
-            className="absolute top-0 bottom-0 right-0 w-px z-20"
-            style={{ background: "hsl(var(--gold) / 0.6)", boxShadow: "0 0 4px hsl(var(--gold) / 0.4)" }}
-          />
-          <TopPanel />
-        </div>
+            className="pkg-shadow rounded overflow-hidden"
+            style={{
+              display: "flex",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%) rotate(-90deg)",
+              transformOrigin: "center center",
+            }}
+          >
+            {/* LEFT: Painel Traseiro */}
+            <div className="panel-fold-line">
+              <NutritionPanel side="verso" />
+            </div>
 
-        {/* RIGHT: Painel Frontal */}
-        <div className="panel-fold-line">
-          <NutritionPanel side="frente" />
+            {/* CENTER: Painel Superior (topo da caixa) */}
+            <div className="relative">
+              <div
+                className="absolute top-0 bottom-0 left-0 w-px z-20"
+                style={{ background: "hsl(var(--gold) / 0.6)", boxShadow: "0 0 4px hsl(var(--gold) / 0.4)" }}
+              />
+              <div
+                className="absolute top-0 bottom-0 right-0 w-px z-20"
+                style={{ background: "hsl(var(--gold) / 0.6)", boxShadow: "0 0 4px hsl(var(--gold) / 0.4)" }}
+              />
+              <TopPanel />
+            </div>
+
+            {/* RIGHT: Painel Frontal */}
+            <div className="panel-fold-line">
+              <NutritionPanel side="frente" />
+            </div>
+          </div>
+
+          {/* Labels alongside the rotated strip */}
+          {/* Left label (appears on top after rotation → Traseiro, i.e. bottom of shelf view) */}
+          <div
+            className="absolute flex items-center gap-1"
+            style={{ left: "-5.5cm", top: "50%", transform: "translateY(-50%) rotate(-90deg)", transformOrigin: "center center", whiteSpace: "nowrap" }}
+          >
+            <div className="h-px bg-green-deep/20" style={{ width: "2cm" }} />
+            <span className="font-body uppercase text-muted-foreground" style={{ fontSize: "5.5pt", letterSpacing: "0.12em" }}>
+              Painel Traseiro (verso)
+            </span>
+            <div className="h-px bg-green-deep/20" style={{ width: "2cm" }} />
+          </div>
         </div>
       </div>
 
-      {/* Fold guide labels */}
-      <div
-        className="flex gap-0 animate-fade-up"
-        style={{ animationDelay: "0.3s" }}
-      >
-        <div className="flex flex-col items-center" style={{ width: "12cm" }}>
-          <div className="w-full h-px bg-green-deep/20 mb-1" />
-          <span className="font-body uppercase text-muted-foreground" style={{ fontSize: "6pt", letterSpacing: "0.15em" }}>
-            ← Painel Traseiro (verso) →
-          </span>
-        </div>
-        <div className="flex flex-col items-center" style={{ width: "13cm" }}>
-          <div className="w-full h-px bg-gold/60 mb-1" />
-          <span className="font-body uppercase text-gold-dark font-semibold" style={{ fontSize: "6pt", letterSpacing: "0.15em" }}>
-            ← Painel Superior (topo) →
-          </span>
-        </div>
-        <div className="flex flex-col items-center" style={{ width: "12cm" }}>
-          <div className="w-full h-px bg-green-deep/20 mb-1" />
-          <span className="font-body uppercase text-muted-foreground" style={{ fontSize: "6pt", letterSpacing: "0.15em" }}>
-            ← Painel Frontal (frente) →
-          </span>
-        </div>
-      </div>
-
-      {/* 3D mockup hint */}
-      <div
-        className="text-center animate-fade-up"
-        style={{ animationDelay: "0.45s" }}
-      >
+      {/* Hint */}
+      <div className="text-center animate-fade-up" style={{ animationDelay: "0.4s" }}>
         <p className="font-body text-muted-foreground" style={{ fontSize: "7pt" }}>
-          As linhas douradas indicam as dobras do sleeve. Escala real: 37cm × 10cm.
+          As linhas douradas indicam as dobras. Escala real: 37cm × 10cm.
         </p>
       </div>
     </div>
   );
 }
+
