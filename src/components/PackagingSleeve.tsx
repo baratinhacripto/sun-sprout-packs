@@ -129,6 +129,18 @@ function ArtPanel() {
         }}
       />
       {/* Content */}
+      <div className="absolute top-0 left-0 right-0 pt-4 px-4 text-center z-10">
+        <h2
+          className="font-cursive"
+          style={{
+            fontSize: "18pt",
+            color: "hsl(var(--gold-light))",
+            textShadow: "0 2px 10px hsl(142 52% 6% / 0.7)",
+          }}
+        >
+          Fazenda Princezinha
+        </h2>
+      </div>
       <div className="absolute bottom-0 left-0 right-0 pb-4 pt-2 px-4 text-center">
         <div
           className="mx-auto mb-2 rounded-full pkg-gold-gradient"
