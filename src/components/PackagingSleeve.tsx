@@ -370,18 +370,34 @@ export default function PackagingSleeve() {
     if (!sleeveRef.current) return;
     setExporting(true);
     try {
-      // 33cm x 9cm at 300dpi → 3898 x 1063 pixels (rotated: 1063 x 3898)
-      const targetW = 1063; // 9cm
-      const targetH = 3898; // 33cm
       const el = sleeveRef.current;
-      const scale = targetH / el.offsetHeight;
+
+      // Temporarily remove decorative classes that html2canvas struggles with
+      el.classList.remove("pkg-shadow", "rounded");
+
+      // Use a fixed scale that targets ~300dpi for 33cm x 9cm
+      // 9cm = ~340px on screen, target 1063px → scale ~3.13
+      const scale = 3.13;
 
       const canvas = await html2canvas(el, {
         scale,
         useCORS: true,
         backgroundColor: null,
         logging: false,
+        allowTaint: true,
+        imageTimeout: 15000,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        scrollX: 0,
+        scrollY: 0,
+        x: 0,
+        y: 0,
+        windowWidth: el.offsetWidth,
+        windowHeight: el.offsetHeight,
       });
+
+      // Restore classes
+      el.classList.add("pkg-shadow", "rounded");
 
       const link = document.createElement("a");
       link.download = "sleeve-microverdes-girassol-300dpi.png";
@@ -389,6 +405,8 @@ export default function PackagingSleeve() {
       link.click();
     } catch (err) {
       console.error("Export failed:", err);
+      // Restore classes on error too
+      sleeveRef.current?.classList.add("pkg-shadow", "rounded");
     } finally {
       setExporting(false);
     }
