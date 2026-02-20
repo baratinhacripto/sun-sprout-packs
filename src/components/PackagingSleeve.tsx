@@ -142,10 +142,6 @@ function ArtPanel() {
         </h2>
       </div>
       <div className="absolute bottom-0 left-0 right-0 pb-4 pt-2 px-4 text-center">
-        <div
-          className="mx-auto mb-2 rounded-full pkg-gold-gradient"
-          style={{ width: "3cm", height: "1.5px" }}
-        />
         <h1
           className="font-cursive leading-none mb-1"
           style={{
@@ -156,10 +152,6 @@ function ArtPanel() {
         >
           microverdes de girassol
         </h1>
-        <div
-          className="mx-auto mb-2 rounded-full pkg-gold-gradient"
-          style={{ width: "3cm", height: "1.5px" }}
-        />
         <p
           className="font-body tracking-widest uppercase"
           style={{
