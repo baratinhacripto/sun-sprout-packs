@@ -2,6 +2,7 @@ import { useRef, useCallback, useState, useEffect } from "react";
 import html2canvas from "html2canvas";
 import { Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import sunflowerImg from "@/assets/sunflower-micro.jpg";
 
 const SLIDE_SIZE = 1080;
 
@@ -11,57 +12,122 @@ interface SlideData {
   render: () => JSX.Element;
 }
 
-/* ─── Nutrient comparison data ─── */
+/* ─── Nutrient comparison data (Sunflower microgreens specific) ─── */
 const comparisons = {
   rucula: {
     name: "Rúcula",
     emoji: "🥬",
     nutrients: [
-      { label: "Vitamina C", micro: "40x mais", icon: "🍊" },
-      { label: "Vitamina E", micro: "10x mais", icon: "✨" },
-      { label: "Betacaroteno", micro: "8x mais", icon: "🥕" },
+      { label: "Vitamina E", micro: "9.7×", microVal: "2.9mg", otherVal: "0.3mg", icon: "✨" },
+      { label: "Proteínas", micro: "2.5×", microVal: "4.0g", otherVal: "1.6g", icon: "💪" },
+      { label: "Zinco", micro: "2.3×", microVal: "0.9mg", otherVal: "0.4mg", icon: "🛡️" },
     ],
   },
   alface: {
     name: "Alface",
     emoji: "🥗",
     nutrients: [
-      { label: "Vitamina C", micro: "50x mais", icon: "🍊" },
-      { label: "Vitamina K", micro: "20x mais", icon: "💚" },
-      { label: "Antioxidantes", micro: "6x mais", icon: "🛡️" },
+      { label: "Vitamina E", micro: "9.7×", microVal: "2.9mg", otherVal: "0.3mg", icon: "✨" },
+      { label: "Proteínas", micro: "2.8×", microVal: "4.0g", otherVal: "1.4g", icon: "💪" },
+      { label: "Vitamina C", micro: "2.4×", microVal: "22mg", otherVal: "9mg", icon: "🍊" },
     ],
   },
   espinafre: {
     name: "Espinafre",
     emoji: "🌿",
     nutrients: [
-      { label: "Vitamina C", micro: "5x mais", icon: "🍊" },
-      { label: "Vitamina E", micro: "12x mais", icon: "✨" },
-      { label: "Polifenóis", micro: "4x mais", icon: "💎" },
+      { label: "Vitamina E", micro: "1.5×", microVal: "2.9mg", otherVal: "2.0mg", icon: "✨" },
+      { label: "Zinco", micro: "1.7×", microVal: "0.9mg", otherVal: "0.5mg", icon: "🛡️" },
+      { label: "Folato", micro: "1.3×", microVal: "80µg", otherVal: "58µg", icon: "🧬" },
     ],
   },
 };
+
+/* ─── Shared slide wrapper with sleeve-style cream background ─── */
+function SlideBase({ children, variant = "cream" }: { children: React.ReactNode; variant?: "cream" | "dark" }) {
+  if (variant === "dark") {
+    return (
+      <div className="flex flex-col h-full w-full relative overflow-hidden" style={{ background: "hsl(142,52%,16%)" }}>
+        {/* Diagonal stripe texture like sleeve */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(142,52%,20% / 0.3) 8px, hsl(142,52%,20% / 0.3) 16px)",
+        }} />
+        <div className="relative z-10 flex flex-col h-full w-full">{children}</div>
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col h-full w-full relative overflow-hidden" style={{ background: "hsl(55,60%,95%)" }}>
+      {/* Diagonal stripe texture like sleeve */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(42,95%,52% / 0.06) 8px, hsl(42,95%,52% / 0.06) 16px)",
+      }} />
+      <div className="relative z-10 flex flex-col h-full w-full">{children}</div>
+    </div>
+  );
+}
+
+/* ─── Green header bar (like sleeve top bar) ─── */
+function SlideHeader({ showSubtitle = true }: { showSubtitle?: boolean }) {
+  return (
+    <>
+      <div className="px-16 py-8 flex items-center gap-4" style={{ background: "linear-gradient(180deg, hsl(142,52%,16%), hsl(142,45%,28%))" }}>
+        <div className="flex flex-col">
+          <span className="font-cursive text-[36px]" style={{ color: "hsl(48,100%,78%)" }}>
+            Fazenda Princezinha
+          </span>
+          {showSubtitle && (
+            <span className="font-body uppercase tracking-[0.18em] text-[18px] mt-1" style={{ color: "hsl(42,95%,52% / 0.8)" }}>
+              microverdes de girassol
+            </span>
+          )}
+        </div>
+      </div>
+      {/* Gold accent line like sleeve */}
+      <div className="h-[4px]" style={{ background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
+    </>
+  );
+}
 
 /* ─── Slide components ─── */
 
 function SlideCapa() {
   return (
-    <div
-      className="flex flex-col items-center justify-center h-full w-full p-16 text-center"
-      style={{ background: "linear-gradient(180deg, hsl(142,52%,14%) 0%, hsl(142,52%,22%) 60%, hsl(142,45%,30%) 100%)" }}
-    >
-      <p className="font-cursive text-[52px] mb-4" style={{ color: "hsl(48,100%,78%)" }}>
-        Fazenda Princezinha
-      </p>
-      <div className="w-24 h-1 rounded-full mb-10" style={{ background: "hsl(42,95%,52%)" }} />
-      <h1 className="font-body font-semibold text-[72px] leading-tight mb-6" style={{ color: "hsl(60,20%,97%)" }}>
-        Microverdes
-      </h1>
-      <p className="font-body text-[36px] leading-relaxed max-w-[700px]" style={{ color: "hsl(142,38%,78%)" }}>
-        O superalimento que entrega <span style={{ color: "hsl(42,95%,52%)" }}>até 50x mais nutrientes</span> que as verduras tradicionais
-      </p>
-      <div className="mt-12 flex items-center gap-3">
-        <span className="text-[28px]" style={{ color: "hsl(142,38%,78%)" }}>Deslize para saber mais →</span>
+    <div className="relative flex flex-col h-full w-full overflow-hidden">
+      {/* Full bleed sunflower image like sleeve ArtPanel */}
+      <img
+        src={sunflowerImg}
+        alt="Microverdes de girassol"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      {/* Gradient overlay like sleeve */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(to bottom, hsl(142,52%,12% / 0.15) 0%, hsl(142,52%,12% / 0.5) 40%, hsl(142,52%,10% / 0.92) 100%)",
+        }}
+      />
+      {/* Content */}
+      <div className="absolute top-0 left-0 right-0 pt-12 px-16 text-center z-10">
+        <p className="font-cursive text-[52px]" style={{ color: "hsl(48,100%,78%)", textShadow: "0 2px 10px hsl(142,52%,6% / 0.7)" }}>
+          Fazenda Princezinha
+        </p>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 pb-16 px-16 text-center z-10">
+        <div className="mx-auto mb-6 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
+        <h1 className="font-cursive text-[64px] leading-none mb-3" style={{ color: "hsl(48,100%,78%)", textShadow: "0 1px 8px hsl(142,52%,6% / 0.6)" }}>
+          microverdes de girassol
+        </h1>
+        <div className="mx-auto mb-6 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
+        <p className="font-body text-[32px] leading-relaxed max-w-[750px] mx-auto" style={{ color: "hsl(142,38%,82%)" }}>
+          O superalimento que entrega <span style={{ color: "hsl(42,95%,52%)" }}>até 40× mais nutrientes</span> que as verduras tradicionais
+        </p>
+        <p className="font-body uppercase tracking-[0.22em] text-[20px] mt-8" style={{ color: "hsl(42,95%,52%)" }}>
+          sem agrotóxicos
+        </p>
+        <div className="mt-8 flex items-center justify-center gap-3">
+          <span className="text-[24px]" style={{ color: "hsl(142,38%,75%)" }}>Deslize para saber mais →</span>
+        </div>
       </div>
     </div>
   );
@@ -69,151 +135,165 @@ function SlideCapa() {
 
 function SlideOQueSao() {
   return (
-    <div
-      className="flex flex-col h-full w-full p-16"
-      style={{ background: "hsl(55,60%,95%)" }}
-    >
-      <p className="font-cursive text-[32px] mb-2" style={{ color: "hsl(142,52%,22%)" }}>
-        Fazenda Princezinha
-      </p>
-      <div className="w-16 h-1 rounded-full mb-10" style={{ background: "hsl(42,95%,52%)" }} />
-      <h2 className="font-body font-semibold text-[56px] leading-tight mb-8" style={{ color: "hsl(142,52%,18%)" }}>
-        O que são<br />Microverdes?
-      </h2>
-      <div className="flex-1 flex flex-col justify-center gap-8">
-        {[
-          { emoji: "🌱", text: "Plantas colhidas entre 7 a 14 dias após a germinação" },
-          { emoji: "🔬", text: "Concentram até 40x mais nutrientes que a planta adulta" },
-          { emoji: "🍽️", text: "Sabor intenso e textura delicada" },
-          { emoji: "🌍", text: "Cultivo sustentável, sem agrotóxicos" },
-        ].map((item, i) => (
-          <div key={i} className="flex items-start gap-5">
-            <span className="text-[42px] shrink-0">{item.emoji}</span>
-            <p className="font-body text-[30px] leading-snug" style={{ color: "hsl(140,30%,16%)" }}>
-              {item.text}
-            </p>
-          </div>
-        ))}
+    <SlideBase variant="cream">
+      <SlideHeader />
+      <div className="flex-1 flex flex-col px-16 py-12">
+        <h2 className="font-body font-semibold text-[52px] leading-tight mb-10" style={{ color: "hsl(142,52%,18%)" }}>
+          O que são Microverdes<br />de Girassol? 🌻
+        </h2>
+        <div className="flex-1 flex flex-col justify-center gap-8">
+          {[
+            { emoji: "🌱", text: "Plantas de girassol colhidas entre 7 a 14 dias após a germinação" },
+            { emoji: "🔬", text: "Concentram até 40× mais nutrientes que a planta adulta" },
+            { emoji: "🥜", text: "Sabor suave e adocicado, lembra castanha fresca" },
+            { emoji: "🌍", text: "Cultivo sustentável, sem agrotóxicos, direto da Fazenda Princezinha" },
+          ].map((item, i) => (
+            <div key={i} className="flex items-start gap-5">
+              <span className="text-[42px] shrink-0">{item.emoji}</span>
+              <p className="font-body text-[28px] leading-snug" style={{ color: "hsl(140,30%,16%)" }}>
+                {item.text}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </SlideBase>
   );
 }
 
 function SlideComparison({ vegKey }: { vegKey: keyof typeof comparisons }) {
   const veg = comparisons[vegKey];
   return (
-    <div
-      className="flex flex-col h-full w-full p-16"
-      style={{ background: "linear-gradient(180deg, hsl(142,52%,14%) 0%, hsl(142,52%,22%) 100%)" }}
-    >
-      <p className="font-cursive text-[32px] mb-2" style={{ color: "hsl(48,100%,78%)" }}>
-        Fazenda Princezinha
-      </p>
-      <div className="w-16 h-1 rounded-full mb-8" style={{ background: "hsl(42,95%,52%)" }} />
+    <SlideBase variant="cream">
+      <SlideHeader />
+      <div className="flex-1 flex flex-col px-16 py-10">
+        <h2 className="font-body font-semibold text-[46px] leading-tight mb-2" style={{ color: "hsl(142,52%,18%)" }}>
+          Microverde de Girassol 🌻 vs {veg.name} {veg.emoji}
+        </h2>
+        <p className="font-body text-[22px] mb-8" style={{ color: "hsl(140,20%,42%)" }}>
+          Comparação por porção de 100g
+        </p>
 
-      <h2 className="font-body font-semibold text-[48px] leading-tight mb-2" style={{ color: "hsl(60,20%,97%)" }}>
-        Microverdes vs {veg.name} {veg.emoji}
-      </h2>
-      <p className="font-body text-[26px] mb-10" style={{ color: "hsl(142,38%,70%)" }}>
-        Comparação por porção de 100g
-      </p>
-
-      <div className="flex-1 flex flex-col justify-center gap-8">
-        {veg.nutrients.map((n, i) => (
-          <div
-            key={i}
-            className="rounded-2xl p-8 flex items-center gap-6"
-            style={{ background: "hsl(142,52%,18% / 0.6)", border: "1px solid hsl(142,45%,32%)" }}
-          >
-            <span className="text-[48px] shrink-0">{n.icon}</span>
-            <div className="flex-1">
-              <p className="font-body font-medium text-[30px]" style={{ color: "hsl(60,20%,97%)" }}>
-                {n.label}
-              </p>
-              <p className="font-body font-semibold text-[40px] mt-1" style={{ color: "hsl(42,95%,52%)" }}>
-                {n.micro}
-              </p>
+        <div className="flex-1 flex flex-col justify-center gap-7">
+          {veg.nutrients.map((n, i) => (
+            <div
+              key={i}
+              className="rounded-2xl p-8 flex items-center gap-6"
+              style={{ background: "hsl(0,0%,100%)", boxShadow: "0 4px 20px hsl(142,52%,12% / 0.08)", border: "1px solid hsl(140,20%,82%)" }}
+            >
+              <span className="text-[48px] shrink-0">{n.icon}</span>
+              <div className="flex-1">
+                <p className="font-body font-medium text-[28px]" style={{ color: "hsl(142,52%,18%)" }}>
+                  {n.label}
+                </p>
+                <div className="flex items-baseline gap-3 mt-2">
+                  <span className="font-body font-semibold text-[38px]" style={{ color: "hsl(42,95%,42%)" }}>
+                    {n.micro}
+                  </span>
+                  <span className="font-body text-[20px]" style={{ color: "hsl(140,20%,42%)" }}>
+                    ({n.microVal} vs {n.otherVal})
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <p className="font-body text-[22px] mt-6 text-center" style={{ color: "hsl(142,38%,60%)" }}>
-        *Fonte: Journal of Agricultural and Food Chemistry
-      </p>
-    </div>
+        {/* Legend */}
+        <div className="flex items-center gap-6 mt-6">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-3 rounded-sm" style={{ background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
+            <span className="font-body font-semibold text-[18px]" style={{ color: "hsl(142,52%,18%)" }}>Microverde de Girassol</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-3 rounded-sm" style={{ background: "hsl(140,20%,70%)" }} />
+            <span className="font-body text-[18px]" style={{ color: "hsl(140,20%,42%)" }}>{veg.name}</span>
+          </div>
+        </div>
+      </div>
+    </SlideBase>
   );
 }
 
 function SlideResumo() {
   return (
-    <div
-      className="flex flex-col h-full w-full p-16"
-      style={{ background: "hsl(55,60%,95%)" }}
-    >
-      <p className="font-cursive text-[32px] mb-2" style={{ color: "hsl(142,52%,22%)" }}>
-        Fazenda Princezinha
-      </p>
-      <div className="w-16 h-1 rounded-full mb-8" style={{ background: "hsl(42,95%,52%)" }} />
-      <h2 className="font-body font-semibold text-[48px] leading-tight mb-10" style={{ color: "hsl(142,52%,18%)" }}>
-        Resumo: por que escolher Microverdes? 🌱
-      </h2>
-      <div className="flex-1 grid grid-cols-2 gap-6">
-        {[
-          { icon: "💪", title: "Mais nutritivos", desc: "Até 50x mais vitaminas e minerais" },
-          { icon: "🌿", title: "100% natural", desc: "Sem agrotóxicos, sem aditivos" },
-          { icon: "⚡", title: "Sabor intenso", desc: "Transformam qualquer prato" },
-          { icon: "🌎", title: "Sustentáveis", desc: "Menos água, menos terra, menos tempo" },
-        ].map((item, i) => (
-          <div
-            key={i}
-            className="rounded-2xl p-8 flex flex-col items-center text-center"
-            style={{ background: "hsl(0,0%,100%)", boxShadow: "0 4px 20px hsl(142,52%,12% / 0.08)" }}
-          >
-            <span className="text-[52px] mb-4">{item.icon}</span>
-            <p className="font-body font-semibold text-[28px] mb-2" style={{ color: "hsl(142,52%,18%)" }}>
-              {item.title}
-            </p>
-            <p className="font-body text-[22px]" style={{ color: "hsl(140,20%,40%)" }}>
-              {item.desc}
-            </p>
-          </div>
-        ))}
+    <SlideBase variant="cream">
+      <SlideHeader />
+      <div className="flex-1 flex flex-col px-16 py-10">
+        <h2 className="font-body font-semibold text-[44px] leading-tight mb-8" style={{ color: "hsl(142,52%,18%)" }}>
+          Por que escolher Microverdes de Girassol? 🌻
+        </h2>
+        <div className="flex-1 grid grid-cols-2 gap-6">
+          {[
+            { icon: "💪", title: "Mais nutritivos", desc: "Até 40× mais vitaminas e minerais que verduras comuns" },
+            { icon: "🌿", title: "100% natural", desc: "Sem agrotóxicos, cultivados na Fazenda Princezinha" },
+            { icon: "🥜", title: "Sabor único", desc: "Suave e adocicado, lembra castanha fresca" },
+            { icon: "🌎", title: "Sustentáveis", desc: "Menos água, menos terra, colheita em 7-14 dias" },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="rounded-2xl p-8 flex flex-col items-center text-center"
+              style={{ background: "hsl(0,0%,100%)", boxShadow: "0 4px 20px hsl(142,52%,12% / 0.08)", border: "1px solid hsl(140,20%,82%)" }}
+            >
+              <span className="text-[52px] mb-4">{item.icon}</span>
+              <p className="font-body font-semibold text-[26px] mb-2" style={{ color: "hsl(142,52%,18%)" }}>
+                {item.title}
+              </p>
+              <p className="font-body text-[20px]" style={{ color: "hsl(140,20%,40%)" }}>
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </SlideBase>
   );
 }
 
 function SlideCTA() {
   return (
-    <div
-      className="flex flex-col items-center justify-center h-full w-full p-16 text-center"
-      style={{ background: "linear-gradient(180deg, hsl(142,52%,14%) 0%, hsl(142,52%,22%) 60%, hsl(142,45%,30%) 100%)" }}
-    >
-      <p className="font-cursive text-[52px] mb-6" style={{ color: "hsl(48,100%,78%)" }}>
-        Fazenda Princezinha
-      </p>
-      <div className="w-24 h-1 rounded-full mb-12" style={{ background: "hsl(42,95%,52%)" }} />
-
-      <h2 className="font-body font-semibold text-[56px] leading-tight mb-6" style={{ color: "hsl(60,20%,97%)" }}>
-        Experimente nossos<br />Microverdes! 🌱
-      </h2>
-      <p className="font-body text-[30px] mb-10 max-w-[700px]" style={{ color: "hsl(142,38%,78%)" }}>
-        Direto da nossa fazenda para a sua mesa, com todo o cuidado e frescor que você merece.
-      </p>
-
+    <div className="relative flex flex-col h-full w-full overflow-hidden">
+      {/* Sunflower bg image */}
+      <img
+        src={sunflowerImg}
+        alt="Microverdes de girassol"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
       <div
-        className="rounded-2xl px-12 py-6 mb-8"
-        style={{ background: "hsl(42,95%,52%)" }}
-      >
-        <p className="font-body font-semibold text-[32px]" style={{ color: "hsl(142,52%,14%)" }}>
-          📩 Peça pelo nosso Instagram
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(to bottom, hsl(142,52%,12% / 0.6) 0%, hsl(142,52%,10% / 0.88) 50%, hsl(142,52%,10% / 0.95) 100%)",
+        }}
+      />
+      <div className="relative z-10 flex flex-col items-center justify-center h-full w-full p-16 text-center">
+        <p className="font-cursive text-[52px] mb-6" style={{ color: "hsl(48,100%,78%)", textShadow: "0 2px 8px hsl(142,52%,6% / 0.5)" }}>
+          Fazenda Princezinha
+        </p>
+        <div className="mx-auto mb-10 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
+
+        <h2 className="font-body font-semibold text-[52px] leading-tight mb-6" style={{ color: "hsl(60,20%,97%)" }}>
+          Experimente nossos<br />Microverdes de Girassol! 🌻
+        </h2>
+        <p className="font-body text-[28px] mb-10 max-w-[700px]" style={{ color: "hsl(142,38%,78%)" }}>
+          Direto da nossa fazenda para a sua mesa, com todo o cuidado e frescor que você merece.
+        </p>
+
+        <div
+          className="rounded-2xl px-12 py-6 mb-8"
+          style={{ background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }}
+        >
+          <p className="font-body font-semibold text-[30px]" style={{ color: "hsl(142,52%,14%)" }}>
+            📩 Peça pelo nosso Instagram
+          </p>
+        </div>
+
+        <p className="font-body text-[24px]" style={{ color: "hsl(142,38%,70%)" }}>
+          @fazendaprincezinha
+        </p>
+        <p className="font-body uppercase tracking-[0.22em] text-[16px] mt-6" style={{ color: "hsl(42,95%,52%)" }}>
+          sem agrotóxicos · cultivado com amor 🌱
         </p>
       </div>
-
-      <p className="font-body text-[26px]" style={{ color: "hsl(142,38%,70%)" }}>
-        @fazendaprincezinha
-      </p>
     </div>
   );
 }
@@ -279,7 +359,7 @@ export default function InstagramCarousel() {
             Fazenda Princezinha
           </h1>
           <p className="font-body text-sm" style={{ color: "hsl(140,20%,42%)" }}>
-            Carrossel Instagram · {slides.length} slides
+            Carrossel Instagram · {slides.length} slides · Microverdes de Girassol
           </p>
         </div>
 
