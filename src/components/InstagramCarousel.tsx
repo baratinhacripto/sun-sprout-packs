@@ -93,40 +93,44 @@ function SlideHeader({ showSubtitle = true }: { showSubtitle?: boolean }) {
 
 function SlideCapa() {
   return (
-    <div className="relative flex flex-col h-full w-full overflow-hidden">
-      {/* Full bleed sunflower image like sleeve ArtPanel */}
-      <img
-        src={sunflowerImg}
-        alt="Microverdes de girassol"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+    <div
+      className="flex flex-col h-full w-full overflow-hidden"
+      style={{
+        backgroundImage: `url(${sunflowerImg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Light overlay for readability */}
       <div
-        className="absolute inset-0"
+        className="flex flex-col h-full w-full items-center justify-between py-12 px-16"
         style={{
           background: "linear-gradient(to bottom, hsl(55,60%,95% / 0.88) 0%, hsl(55,60%,95% / 0.93) 50%, hsl(55,60%,95% / 0.96) 100%)",
         }}
-      />
-      {/* Content */}
-      <div className="absolute top-0 left-0 right-0 pt-12 px-16 text-center z-10">
-        <p className="font-cursive text-[52px]" style={{ color: "hsl(142,52%,18%)", textShadow: "0 1px 4px hsl(55,60%,95% / 0.5)" }}>
-           Fazenda Princesinha
-        </p>
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 pb-16 px-16 text-center z-10">
-        <div className="mx-auto mb-6 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
-        <h1 className="font-cursive text-[64px] leading-none mb-3" style={{ color: "hsl(142,52%,18%)", textShadow: "0 1px 4px hsl(55,60%,95% / 0.5)" }}>
-          microverdes de girassol
-        </h1>
-        <div className="mx-auto mb-6 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
-        <p className="font-body text-[32px] leading-relaxed max-w-[750px] mx-auto" style={{ color: "hsl(140,30%,16%)" }}>
-          O superalimento que entrega <span style={{ color: "hsl(42,95%,42%)" }}>até 40× mais nutrientes</span> que as verduras tradicionais
-        </p>
-        <p className="font-body uppercase tracking-[0.22em] text-[20px] mt-8" style={{ color: "hsl(38,80%,38%)" }}>
-          sem agrotóxicos
-        </p>
-        <div className="mt-8 flex items-center justify-center gap-3">
-          <span className="text-[24px]" style={{ color: "hsl(140,20%,35%)" }}>Deslize para saber mais →</span>
+      >
+        {/* Top */}
+        <div className="text-center">
+          <p className="font-cursive text-[52px]" style={{ color: "hsl(142,52%,18%)" }}>
+            Fazenda Princesinha
+          </p>
+        </div>
+
+        {/* Center + Bottom */}
+        <div className="text-center flex flex-col items-center">
+          <div className="mx-auto mb-6 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
+          <h1 className="font-cursive text-[64px] leading-none mb-3" style={{ color: "hsl(142,52%,18%)" }}>
+            microverdes de girassol
+          </h1>
+          <div className="mx-auto mb-6 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
+          <p className="font-body text-[32px] leading-relaxed max-w-[750px] mx-auto" style={{ color: "hsl(140,30%,16%)" }}>
+            O superalimento que entrega <span style={{ color: "hsl(42,95%,42%)" }}>até 40× mais nutrientes</span> que as verduras tradicionais
+          </p>
+          <p className="font-body uppercase tracking-[0.22em] text-[20px] mt-8" style={{ color: "hsl(38,80%,38%)" }}>
+            sem agrotóxicos
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <span className="text-[24px]" style={{ color: "hsl(140,20%,35%)" }}>Deslize para saber mais →</span>
+          </div>
         </div>
       </div>
     </div>
@@ -252,21 +256,21 @@ function SlideResumo() {
 
 function SlideCTA() {
   return (
-    <div className="relative flex flex-col h-full w-full overflow-hidden">
-      {/* Sunflower bg image */}
-      <img
-        src={sunflowerImg}
-        alt="Microverdes de girassol"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+    <div
+      className="flex flex-col h-full w-full overflow-hidden"
+      style={{
+        backgroundImage: `url(${sunflowerImg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div
-        className="absolute inset-0"
+        className="flex flex-col items-center justify-center h-full w-full p-16 text-center"
         style={{
           background: "linear-gradient(to bottom, hsl(142,52%,12% / 0.6) 0%, hsl(142,52%,10% / 0.88) 50%, hsl(142,52%,10% / 0.95) 100%)",
         }}
-      />
-      <div className="relative z-10 flex flex-col items-center justify-center h-full w-full p-16 text-center">
-        <p className="font-cursive text-[52px] mb-6" style={{ color: "hsl(48,100%,78%)", textShadow: "0 2px 8px hsl(142,52%,6% / 0.5)" }}>
+      >
+        <p className="font-cursive text-[52px] mb-6" style={{ color: "hsl(48,100%,78%)" }}>
           Fazenda Princesinha
         </p>
         <div className="mx-auto mb-10 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
