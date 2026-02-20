@@ -48,21 +48,13 @@ function SlideBase({ children, variant = "cream" }: { children: React.ReactNode;
   if (variant === "dark") {
     return (
       <div className="flex flex-col h-full w-full relative overflow-hidden" style={{ background: "hsl(142,52%,16%)" }}>
-        {/* Diagonal stripe texture like sleeve */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(142,52%,20% / 0.3) 8px, hsl(142,52%,20% / 0.3) 16px)",
-        }} />
-        <div className="relative z-10 flex flex-col h-full w-full">{children}</div>
+      <div className="flex flex-col h-full w-full">{children}</div>
       </div>
     );
   }
   return (
     <div className="flex flex-col h-full w-full relative overflow-hidden" style={{ background: "hsl(55,60%,95%)" }}>
-      {/* Diagonal stripe texture like sleeve */}
-      <div className="absolute inset-0" style={{
-        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(42,95%,52% / 0.06) 8px, hsl(42,95%,52% / 0.06) 16px)",
-      }} />
-      <div className="relative z-10 flex flex-col h-full w-full">{children}</div>
+      <div className="flex flex-col h-full w-full">{children}</div>
     </div>
   );
 }
@@ -97,10 +89,6 @@ function SlideCapa() {
       className="flex flex-col h-full w-full overflow-hidden"
       style={{ background: "hsl(55,60%,95%)" }}
     >
-      {/* Subtle diagonal texture */}
-      <div className="absolute inset-0" style={{
-        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(42,95%,52% / 0.06) 8px, hsl(42,95%,52% / 0.06) 16px)",
-      }} />
       <div
         className="relative z-10 flex flex-col h-full w-full items-center justify-between py-12 px-16"
       >
@@ -256,10 +244,6 @@ function SlideCTA() {
       className="flex flex-col h-full w-full overflow-hidden relative"
       style={{ background: "linear-gradient(180deg, hsl(142,52%,16%), hsl(142,45%,12%))" }}
     >
-      {/* Subtle diagonal texture */}
-      <div className="absolute inset-0" style={{
-        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(142,52%,20% / 0.3) 8px, hsl(142,52%,20% / 0.3) 16px)",
-      }} />
       <div
         className="relative z-10 flex flex-col items-center justify-center h-full w-full p-16 text-center"
       >
