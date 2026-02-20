@@ -141,9 +141,9 @@ function ArtPanel() {
           Fazenda Princesinha
         </h2>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 pb-4 pt-2 px-4 text-center">
+      <div className="absolute bottom-0 left-0 right-0 pb-5 pt-2 px-4 text-center">
         <h1
-          className="font-cursive leading-none mb-1"
+          className="font-cursive leading-none mb-2"
           style={{
             fontSize: "22pt",
             color: "hsl(var(--gold-light))",
