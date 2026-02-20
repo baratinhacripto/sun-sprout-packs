@@ -74,7 +74,7 @@ function SlideHeader({ showSubtitle = true }: { showSubtitle?: boolean }) {
       <div className="px-16 py-8 flex items-center gap-4" style={{ background: "linear-gradient(180deg, hsl(142,52%,16%), hsl(142,45%,28%))" }}>
         <div className="flex flex-col">
           <span className="font-cursive text-[36px]" style={{ color: "hsl(48,100%,78%)" }}>
-            Fazenda Princezinha
+            Fazenda Princesinha
           </span>
           {showSubtitle && (
             <span className="font-body uppercase tracking-[0.18em] text-[18px] mt-1" style={{ color: "hsl(42,95%,52% / 0.8)" }}>
@@ -104,13 +104,13 @@ function SlideCapa() {
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(to bottom, hsl(55,60%,95% / 0.75) 0%, hsl(55,60%,95% / 0.85) 50%, hsl(55,60%,95% / 0.92) 100%)",
+          background: "linear-gradient(to bottom, hsl(55,60%,95% / 0.88) 0%, hsl(55,60%,95% / 0.93) 50%, hsl(55,60%,95% / 0.96) 100%)",
         }}
       />
       {/* Content */}
       <div className="absolute top-0 left-0 right-0 pt-12 px-16 text-center z-10">
         <p className="font-cursive text-[52px]" style={{ color: "hsl(142,52%,18%)", textShadow: "0 1px 4px hsl(55,60%,95% / 0.5)" }}>
-          Fazenda Princezinha
+           Fazenda Princesinha
         </p>
       </div>
       <div className="absolute bottom-0 left-0 right-0 pb-16 px-16 text-center z-10">
@@ -146,7 +146,7 @@ function SlideOQueSao() {
             { emoji: "🌱", text: "Plantas de girassol colhidas entre 7 a 14 dias após a germinação" },
             { emoji: "🔬", text: "Concentram até 40× mais nutrientes que a planta adulta" },
             { emoji: "🥜", text: "Sabor suave e adocicado, lembra castanha fresca" },
-            { emoji: "🌍", text: "Cultivo sustentável, sem agrotóxicos, direto da Fazenda Princezinha" },
+            { emoji: "🌍", text: "Cultivo sustentável, sem agrotóxicos, direto da Fazenda Princesinha" },
           ].map((item, i) => (
             <div key={i} className="flex items-start gap-5">
               <span className="text-[42px] shrink-0">{item.emoji}</span>
@@ -226,7 +226,7 @@ function SlideResumo() {
         <div className="flex-1 grid grid-cols-2 gap-6">
           {[
             { icon: "💪", title: "Mais nutritivos", desc: "Até 40× mais vitaminas e minerais que verduras comuns" },
-            { icon: "🌿", title: "100% natural", desc: "Sem agrotóxicos, cultivados na Fazenda Princezinha" },
+            { icon: "🌿", title: "100% natural", desc: "Sem agrotóxicos, cultivados na Fazenda Princesinha" },
             { icon: "🥜", title: "Sabor único", desc: "Suave e adocicado, lembra castanha fresca" },
             { icon: "🌎", title: "Sustentáveis", desc: "Menos água, menos terra, colheita em 7-14 dias" },
           ].map((item, i) => (
@@ -267,7 +267,7 @@ function SlideCTA() {
       />
       <div className="relative z-10 flex flex-col items-center justify-center h-full w-full p-16 text-center">
         <p className="font-cursive text-[52px] mb-6" style={{ color: "hsl(48,100%,78%)", textShadow: "0 2px 8px hsl(142,52%,6% / 0.5)" }}>
-          Fazenda Princezinha
+          Fazenda Princesinha
         </p>
         <div className="mx-auto mb-10 rounded-full" style={{ width: "280px", height: "3px", background: "linear-gradient(135deg, hsl(42,95%,52%), hsl(38,80%,42%))" }} />
 
@@ -288,7 +288,7 @@ function SlideCTA() {
         </div>
 
         <p className="font-body text-[24px]" style={{ color: "hsl(142,38%,70%)" }}>
-          @fazendaprincezinha
+          @fazendaprincesinha
         </p>
         <p className="font-body uppercase tracking-[0.22em] text-[16px] mt-6" style={{ color: "hsl(42,95%,52%)" }}>
           sem agrotóxicos · cultivado com amor 🌱
@@ -356,7 +356,7 @@ export default function InstagramCarousel() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="font-cursive text-3xl mb-1" style={{ color: "hsl(142,52%,22%)" }}>
-            Fazenda Princezinha
+            Fazenda Princesinha
           </h1>
           <p className="font-body text-sm" style={{ color: "hsl(140,20%,42%)" }}>
             Carrossel Instagram · {slides.length} slides · Microverdes de Girassol

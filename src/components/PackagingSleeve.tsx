@@ -138,7 +138,7 @@ function ArtPanel() {
             textShadow: "0 2px 10px hsl(142 52% 6% / 0.7)",
           }}
         >
-          Fazenda Princezinha
+          Fazenda Princesinha
         </h2>
       </div>
       <div className="absolute bottom-0 left-0 right-0 pb-4 pt-2 px-4 text-center">
