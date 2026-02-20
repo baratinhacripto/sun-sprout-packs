@@ -198,8 +198,6 @@ function NutritionPanel() {
         background: "hsl(var(--cream))",
       }}
     >
-      {/* Diagonal stripe texture */}
-      <div className="absolute inset-0 diagonal-stripe opacity-60" />
 
       {/* Top header bar */}
       <div className="relative z-10 px-3 py-1.5 pkg-green-gradient flex items-center gap-2">
