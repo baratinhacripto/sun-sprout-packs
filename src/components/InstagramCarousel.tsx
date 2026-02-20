@@ -95,18 +95,14 @@ function SlideCapa() {
   return (
     <div
       className="flex flex-col h-full w-full overflow-hidden"
-      style={{
-        backgroundImage: `url(${sunflowerImg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      style={{ background: "hsl(55,60%,95%)" }}
     >
-      {/* Light overlay for readability */}
+      {/* Subtle diagonal texture */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(42,95%,52% / 0.06) 8px, hsl(42,95%,52% / 0.06) 16px)",
+      }} />
       <div
-        className="flex flex-col h-full w-full items-center justify-between py-12 px-16"
-        style={{
-          background: "linear-gradient(to bottom, hsl(55,60%,95% / 0.88) 0%, hsl(55,60%,95% / 0.93) 50%, hsl(55,60%,95% / 0.96) 100%)",
-        }}
+        className="relative z-10 flex flex-col h-full w-full items-center justify-between py-12 px-16"
       >
         {/* Top */}
         <div className="text-center">
@@ -257,18 +253,15 @@ function SlideResumo() {
 function SlideCTA() {
   return (
     <div
-      className="flex flex-col h-full w-full overflow-hidden"
-      style={{
-        backgroundImage: `url(${sunflowerImg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="flex flex-col h-full w-full overflow-hidden relative"
+      style={{ background: "linear-gradient(180deg, hsl(142,52%,16%), hsl(142,45%,12%))" }}
     >
+      {/* Subtle diagonal texture */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 8px, hsl(142,52%,20% / 0.3) 8px, hsl(142,52%,20% / 0.3) 16px)",
+      }} />
       <div
-        className="flex flex-col items-center justify-center h-full w-full p-16 text-center"
-        style={{
-          background: "linear-gradient(to bottom, hsl(142,52%,12% / 0.6) 0%, hsl(142,52%,10% / 0.88) 50%, hsl(142,52%,10% / 0.95) 100%)",
-        }}
+        className="relative z-10 flex flex-col items-center justify-center h-full w-full p-16 text-center"
       >
         <p className="font-cursive text-[52px] mb-6" style={{ color: "hsl(48,100%,78%)" }}>
           Fazenda Princesinha
