@@ -118,3 +118,50 @@
     );
   }
 }
+
+@media print {
+  @page {
+    size: 336mm 96mm;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 336mm;
+    height: 96mm;
+    margin: 0;
+    padding: 0;
+    background: hsl(0 0% 100%);
+    overflow: hidden;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  #print-root,
+  #print-root * {
+    visibility: visible !important;
+  }
+
+  #print-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 336mm !important;
+    height: 96mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #print-canvas {
+    width: 336mm !important;
+    height: 96mm !important;
+    box-shadow: none !important;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+}
+

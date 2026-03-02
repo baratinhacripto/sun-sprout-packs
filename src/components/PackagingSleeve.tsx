@@ -1,9 +1,8 @@
-import { useRef, useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import sunflowerImg from "@/assets/sunflower-micro.jpg";
 import { Download } from "lucide-react";
 
-// ─── Nutritional data ────────────────────────────────────────────────────────
 const nutritionTable = [
   { nutrient: "Valor Energético", unit: "kcal", per100: 27, dv: "1%" },
   { nutrient: "Carboidratos", unit: "g", per100: 2.4, dv: "1%" },
@@ -26,341 +25,594 @@ const comparisonData = [
   { label: "Zinco", sunflower: 0.9, lettuce: 0.2, unit: "mg" },
 ];
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+const CANVAS_WIDTH_MM = 336;
+const CANVAS_HEIGHT_MM = 96;
+const BLEED_MM = 3;
+const SAFE_HEIGHT_MM = 90;
 
-function ComparisonBar({
-  label,
-  sunflower,
-  lettuce,
-  unit,
-}: {
-  label: string;
-  sunflower: number;
-  lettuce: number;
-  unit: string;
-}) {
-  const max = Math.max(sunflower, lettuce) * 1.15;
-  const sfPct = (sunflower / max) * 100;
-  const ltPct = (lettuce / max) * 100;
-  const ratio = Math.round((sunflower / lettuce) * 10) / 10;
+const ART_WIDTH_MM = 130;
+const SIDE_WIDTH_MM = 35;
+const NUTRITION_WIDTH_MM = 130;
 
-  return (
-    <div className="mb-1.5">
-      <div className="flex justify-between items-baseline mb-0.5">
-        <span className="text-[7px] font-semibold text-green-deep uppercase tracking-wide">{label}</span>
-        <span className="text-[6px] text-gold-dark font-bold">{ratio}×</span>
-      </div>
-      <div className="flex items-center gap-1">
-        <div className="flex-1 h-[5px] rounded-full bg-cream-dark overflow-hidden">
-          <div
-            className="h-full rounded-full pkg-gold-gradient"
-            style={{ width: `${sfPct}%` }}
-          />
-        </div>
-        <span className="text-[5.5px] text-green-deep w-8 text-right">
-          {sunflower}{unit}
-        </span>
-      </div>
-      <div className="flex items-center gap-1">
-        <div className="flex-1 h-[5px] rounded-full bg-cream-dark overflow-hidden">
-          <div
-            className="h-full rounded-full bg-muted-foreground/40"
-            style={{ width: `${ltPct}%` }}
-          />
-        </div>
-        <span className="text-[5.5px] text-muted-foreground w-8 text-right">
-          {lettuce}{unit}
-        </span>
-      </div>
-    </div>
-  );
-}
+const ART_X_MM = BLEED_MM;
+const SIDE_TOP_X_MM = ART_X_MM + ART_WIDTH_MM;
+const NUTRITION_X_MM = SIDE_TOP_X_MM + SIDE_WIDTH_MM;
+const SIDE_BOTTOM_X_MM = NUTRITION_X_MM + NUTRITION_WIDTH_MM;
+const PANEL_Y_MM = BLEED_MM;
 
-function NutritionRow({
+const DPI = 300;
+const pxFromMm = (mm: number) => Math.round((mm / 25.4) * DPI);
+
+function NutritionRowAbsolute({
   nutrient,
   unit,
   per100,
   dv,
+  topMm,
   last,
 }: {
   nutrient: string;
   unit: string;
   per100: number;
   dv: string;
+  topMm: number;
   last?: boolean;
 }) {
   return (
     <div
-      className={`flex justify-between items-center py-[2px] ${
-        !last ? "border-b border-green-deep/10" : ""
-      }`}
+      style={{
+        position: "absolute",
+        left: "2mm",
+        top: `${topMm}mm`,
+        width: "58mm",
+        height: "4.6mm",
+        borderBottom: last ? "none" : "0.2mm solid hsl(var(--green-deep) / 0.15)",
+      }}
     >
-      <span className="text-[6.5px] text-green-deep">{nutrient}</span>
-      <div className="flex gap-2 items-center">
-        <span className="text-[6.5px] font-semibold text-green-deep">
-          {per100} {unit}
-        </span>
-        <span className="text-[5.5px] text-muted-foreground w-5 text-right">{dv}</span>
-      </div>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "0.8mm",
+          fontSize: "8px",
+          color: "hsl(var(--green-deep))",
+        }}
+      >
+        {nutrient}
+      </span>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "34mm",
+          top: "0.8mm",
+          fontSize: "8px",
+          fontWeight: 600,
+          color: "hsl(var(--green-deep))",
+        }}
+      >
+        {per100} {unit}
+      </span>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          right: "0mm",
+          top: "0.8mm",
+          fontSize: "7px",
+          color: "hsl(var(--muted-foreground))",
+          width: "7mm",
+          textAlign: "right",
+        }}
+      >
+        {dv}
+      </span>
     </div>
   );
 }
 
-// ─── Panel: Arte (topo da caixa) ─────────────────────────────────────────────
+function ComparisonBarAbsolute({
+  label,
+  sunflower,
+  lettuce,
+  unit,
+  topMm,
+}: {
+  label: string;
+  sunflower: number;
+  lettuce: number;
+  unit: string;
+  topMm: number;
+}) {
+  const trackWidthMm = 32;
+  const max = Math.max(sunflower, lettuce) * 1.15;
+  const sunflowerWidthMm = Number(((sunflower / max) * trackWidthMm).toFixed(2));
+  const lettuceWidthMm = Number(((lettuce / max) * trackWidthMm).toFixed(2));
+  const ratio = Math.round((sunflower / lettuce) * 10) / 10;
 
-function ArtPanel() {
   return (
     <div
-      className="relative overflow-hidden flex-shrink-0"
-      style={{ width: "9cm", height: "13cm" }}
+      style={{
+        position: "absolute",
+        left: "2mm",
+        top: `${topMm}mm`,
+        width: "58mm",
+        height: "9.2mm",
+      }}
     >
-      {/* Full bleed image */}
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "0mm",
+          fontSize: "7px",
+          fontWeight: 700,
+          letterSpacing: "0.03em",
+          textTransform: "uppercase",
+          color: "hsl(var(--green-deep))",
+        }}
+      >
+        {label}
+      </span>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          right: "0mm",
+          top: "0mm",
+          fontSize: "7px",
+          fontWeight: 700,
+          color: "hsl(var(--gold-dark))",
+        }}
+      >
+        {ratio}×
+      </span>
+
+      <div
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "3.4mm",
+          width: `${trackWidthMm}mm`,
+          height: "1.8mm",
+          borderRadius: "999px",
+          background: "hsl(var(--cream-dark))",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: "0mm",
+            top: "0mm",
+            width: `${sunflowerWidthMm}mm`,
+            height: "1.8mm",
+            borderRadius: "999px",
+            background: "var(--pkg-gold-gradient)",
+          }}
+        />
+      </div>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "34mm",
+          top: "2.6mm",
+          fontSize: "6px",
+          color: "hsl(var(--green-deep))",
+          width: "9mm",
+          textAlign: "right",
+        }}
+      >
+        {sunflower}
+        {unit}
+      </span>
+
+      <div
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "6.4mm",
+          width: `${trackWidthMm}mm`,
+          height: "1.8mm",
+          borderRadius: "999px",
+          background: "hsl(var(--cream-dark))",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: "0mm",
+            top: "0mm",
+            width: `${lettuceWidthMm}mm`,
+            height: "1.8mm",
+            borderRadius: "999px",
+            background: "hsl(var(--muted-foreground) / 0.45)",
+          }}
+        />
+      </div>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "34mm",
+          top: "5.6mm",
+          fontSize: "6px",
+          color: "hsl(var(--muted-foreground))",
+          width: "9mm",
+          textAlign: "right",
+        }}
+      >
+        {lettuce}
+        {unit}
+      </span>
+    </div>
+  );
+}
+
+function ArtPanelAbsolute() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: `${ART_X_MM}mm`,
+        top: `${PANEL_Y_MM}mm`,
+        width: `${ART_WIDTH_MM}mm`,
+        height: `${SAFE_HEIGHT_MM}mm`,
+        overflow: "hidden",
+      }}
+    >
       <img
         src={sunflowerImg}
         alt="Microverdes de girassol"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-      {/* Gradient overlay */}
-      <div
-        className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(to bottom, hsl(142 52% 12% / 0.1) 0%, hsl(142 52% 12% / 0.5) 50%, hsl(142 52% 10% / 0.9) 100%)",
+          position: "absolute",
+          left: "0mm",
+          top: "0mm",
+          width: `${ART_WIDTH_MM}mm`,
+          height: `${SAFE_HEIGHT_MM}mm`,
+          objectFit: "cover",
         }}
       />
-      {/* Content */}
-      <div className="absolute top-0 left-0 right-0 pt-4 px-4 text-center z-10">
-        <h2
-          className="font-cursive"
-          style={{
-            fontSize: "18pt",
-            color: "hsl(var(--gold-light))",
-            textShadow: "0 2px 10px hsl(142 52% 6% / 0.7)",
-          }}
-        >
-          Fazenda Princesinha
-        </h2>
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 pb-5 pt-2 px-4 text-center">
-        <h1
-          className="font-cursive leading-none mb-2"
-          style={{
-            fontSize: "22pt",
-            color: "hsl(var(--gold-light))",
-            textShadow: "0 1px 8px hsl(142 52% 6% / 0.6)",
-          }}
-        >
-          microverdes de girassol
-        </h1>
-        <p
-          className="font-body tracking-widest uppercase"
-          style={{
-            fontSize: "7pt",
-            letterSpacing: "0.22em",
-            color: "hsl(var(--gold))",
-          }}
-        >
-          sem agrotóxicos
-        </p>
-        <div
-          className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full border"
-          style={{
-            borderColor: "hsl(var(--gold) / 0.5)",
-            background: "hsl(var(--gold) / 0.12)",
-          }}
-        >
-          <span style={{ fontSize: "6pt", color: "hsl(var(--gold-light))" }}>
-            🌱 Cultivado com amor
-          </span>
-        </div>
-      </div>
+      <div
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "0mm",
+          width: `${ART_WIDTH_MM}mm`,
+          height: `${SAFE_HEIGHT_MM}mm`,
+          background:
+            "linear-gradient(180deg, hsl(142 52% 12% / 0.15), hsl(142 52% 12% / 0.52) 50%, hsl(142 52% 10% / 0.9))",
+        }}
+      />
+
+      <h2
+        className="font-cursive"
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "5mm",
+          width: `${ART_WIDTH_MM}mm`,
+          textAlign: "center",
+          fontSize: "31px",
+          color: "hsl(var(--gold-light))",
+          textShadow: "0 2px 8px hsl(142 52% 6% / 0.7)",
+          margin: "0px",
+        }}
+      >
+        Fazenda Princesinha
+      </h2>
+
+      <h1
+        className="font-cursive"
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "68mm",
+          width: `${ART_WIDTH_MM}mm`,
+          textAlign: "center",
+          fontSize: "37px",
+          lineHeight: "1",
+          color: "hsl(var(--gold-light))",
+          textShadow: "0 1px 6px hsl(142 52% 6% / 0.6)",
+          margin: "0px",
+        }}
+      >
+        microverdes de girassol
+      </h1>
+
+      <p
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "82mm",
+          width: `${ART_WIDTH_MM}mm`,
+          textAlign: "center",
+          fontSize: "10px",
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          color: "hsl(var(--gold))",
+          margin: "0px",
+        }}
+      >
+        sem agrotóxicos
+      </p>
     </div>
   );
 }
 
-// ─── Panel: Informações Nutricionais (fundo da caixa) ────────────────────────
-
-function NutritionPanel() {
+function SidePanelAbsolute({ xMm }: { xMm: number }) {
   return (
     <div
-      className="relative overflow-hidden flex-shrink-0 flex flex-col"
       style={{
-        width: "9cm",
-        height: "13cm",
-        background: "hsl(var(--cream))",
+        position: "absolute",
+        left: `${xMm}mm`,
+        top: `${PANEL_Y_MM}mm`,
+        width: `${SIDE_WIDTH_MM}mm`,
+        height: `${SAFE_HEIGHT_MM}mm`,
+        background: "var(--pkg-green-gradient)",
+        overflow: "hidden",
       }}
     >
-
-      {/* Top header bar */}
-      <div className="relative z-10 px-3 py-1.5 pkg-green-gradient flex items-center gap-2">
-        <div className="flex flex-col">
-          <span
-            className="font-cursive"
-            style={{ fontSize: "10pt", color: "hsl(var(--gold-light))" }}
-          >
-            microverdes de girassol
-          </span>
-          <span
-            className="font-body uppercase tracking-widest"
-            style={{ fontSize: "5pt", color: "hsl(var(--gold) / 0.8)", letterSpacing: "0.18em" }}
-          >
-            sem agrotóxicos
-          </span>
-        </div>
-      </div>
-
-      {/* Gold accent line */}
-      <div className="relative z-10 h-[2px] pkg-gold-gradient" />
-
-      {/* Content body — two columns */}
-      <div className="relative z-10 flex flex-1 gap-2 px-2 py-1.5 overflow-hidden">
-        {/* LEFT: Nutrition table */}
-        <div className="flex-1">
-          <div
-            className="font-body font-bold uppercase text-green-deep mb-0.5 pb-0.5"
-            style={{ fontSize: "6.5pt", letterSpacing: "0.08em", borderBottom: "1.5px solid hsl(var(--green-deep))" }}
-          >
-            Informação Nutricional
-          </div>
-          <div
-            className="font-body text-muted-foreground mb-0.5"
-            style={{ fontSize: "5.5pt" }}
-          >
-            Porção de 100g
-          </div>
-          <div
-            className="font-body text-right text-muted-foreground mb-0.5"
-            style={{ fontSize: "5pt" }}
-          >
-            %VD*
-          </div>
-          {nutritionTable.map((row, i) => (
-            <NutritionRow
-              key={row.nutrient}
-              {...row}
-              last={i === nutritionTable.length - 1}
-            />
-          ))}
-          <p
-            className="font-body text-muted-foreground mt-0.5"
-            style={{ fontSize: "4.5pt" }}
-          >
-            *% Valores Diários com base numa dieta de 2.000 kcal.
-          </p>
-        </div>
-
-        {/* Vertical divider */}
-        <div className="w-px bg-green-deep/15" />
-
-        {/* RIGHT: Comparison + highlights */}
-        <div className="flex-1 flex flex-col">
-          <div
-            className="font-body font-bold uppercase text-green-deep mb-0.5 pb-0.5"
-            style={{ fontSize: "6.5pt", letterSpacing: "0.08em", borderBottom: "1.5px solid hsl(var(--green-deep))" }}
-          >
-            Comparativo × Alface
-          </div>
-
-          {/* Legend */}
-          <div className="flex gap-3 mb-1">
-            <div className="flex items-center gap-1">
-              <div className="w-2.5 h-1.5 rounded-sm pkg-gold-gradient" />
-              <span className="font-body font-semibold text-green-deep" style={{ fontSize: "5pt" }}>
-                Microverdes
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2.5 h-1.5 rounded-sm bg-muted-foreground/40" />
-              <span className="font-body text-muted-foreground" style={{ fontSize: "5pt" }}>
-                Alface
-              </span>
-            </div>
-          </div>
-
-          {comparisonData.map((c) => (
-            <ComparisonBar key={c.label} {...c} />
-          ))}
-
-          {/* Key stats */}
-          <div className="mt-auto flex gap-1">
-            {[
-              { stat: "40×", desc: "mais nutrientes" },
-              { stat: "2.8×", desc: "mais proteínas" },
-              { stat: "9×", desc: "mais vit. E" },
-            ].map((s) => (
-              <div
-                key={s.stat}
-                className="flex-1 p-1 rounded text-center"
-                style={{ background: "hsl(var(--primary) / 0.06)", border: "1px solid hsl(var(--green-deep) / 0.15)" }}
-              >
-                <div
-                  className="font-cursive text-gold-dark font-bold leading-tight"
-                  style={{ fontSize: "11pt" }}
-                >
-                  {s.stat}
-                </div>
-                <div
-                  className="font-body text-green-deep leading-tight"
-                  style={{ fontSize: "4.5pt" }}
-                >
-                  {s.desc}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom strip */}
       <div
-        className="relative z-10 flex justify-between items-center px-3 py-1"
-        style={{ background: "hsl(var(--green-deep) / 0.08)", borderTop: "1px solid hsl(var(--green-deep) / 0.1)" }}
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "0mm",
+          width: `${SIDE_WIDTH_MM}mm`,
+          height: "0.4mm",
+          background: "hsl(var(--gold) / 0.55)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: "0mm",
+          bottom: "0mm",
+          width: `${SIDE_WIDTH_MM}mm`,
+          height: "0.4mm",
+          background: "hsl(var(--gold) / 0.55)",
+        }}
+      />
+      <span
+        className="font-cursive"
+        style={{
+          position: "absolute",
+          left: "17.5mm",
+          top: "45mm",
+          transform: "translate(-50%, -50%) rotate(-90deg)",
+          fontSize: "23px",
+          color: "hsl(var(--gold-light))",
+          whiteSpace: "nowrap",
+        }}
       >
-        <span className="font-body text-muted-foreground" style={{ fontSize: "5pt" }}>
-          Conservar refrigerado entre 2°C e 8°C
-        </span>
-        <span className="font-body text-muted-foreground" style={{ fontSize: "5pt" }}>
-          🌱 Produto fresco · Consumir em até 5 dias
-        </span>
-        <span className="font-body text-muted-foreground" style={{ fontSize: "5pt" }}>
-          Val.: Ver embalagem
-        </span>
-      </div>
+        microverdes de girassol
+      </span>
     </div>
   );
 }
 
-// ─── Side connector panel ─────────────────────────────────────────────────────
-
-function SidePanel({ label }: { label: string }) {
+function NutritionPanelAbsolute() {
   return (
     <div
-      className="relative flex-shrink-0 flex items-center justify-center pkg-green-gradient"
-      style={{ width: "9cm", height: "3.5cm" }}
+      style={{
+        position: "absolute",
+        left: `${NUTRITION_X_MM}mm`,
+        top: `${PANEL_Y_MM}mm`,
+        width: `${NUTRITION_WIDTH_MM}mm`,
+        height: `${SAFE_HEIGHT_MM}mm`,
+        background: "hsl(var(--cream))",
+        overflow: "hidden",
+      }}
     >
-      <span
-        className="font-cursive text-center"
+      <div
         style={{
-          fontSize: "9pt",
+          position: "absolute",
+          left: "0mm",
+          top: "0mm",
+          width: `${NUTRITION_WIDTH_MM}mm`,
+          height: "12mm",
+          background: "var(--pkg-green-gradient)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "12mm",
+          width: `${NUTRITION_WIDTH_MM}mm`,
+          height: "0.6mm",
+          background: "var(--pkg-gold-gradient)",
+        }}
+      />
+
+      <span
+        className="font-cursive"
+        style={{
+          position: "absolute",
+          left: "3mm",
+          top: "2.4mm",
+          fontSize: "20px",
           color: "hsl(var(--gold-light))",
         }}
       >
         microverdes de girassol
       </span>
-      {/* Gold edge lines */}
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "3mm",
+          top: "8.3mm",
+          fontSize: "8px",
+          textTransform: "uppercase",
+          letterSpacing: "0.18em",
+          color: "hsl(var(--gold) / 0.85)",
+        }}
+      >
+        sem agrotóxicos
+      </span>
+
       <div
-        className="absolute left-0 right-0 top-0 h-px"
-        style={{ background: "hsl(var(--gold) / 0.5)" }}
+        style={{
+          position: "absolute",
+          left: "64mm",
+          top: "14mm",
+          width: "0.3mm",
+          height: "66mm",
+          background: "hsl(var(--green-deep) / 0.16)",
+        }}
       />
+
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "2mm",
+          top: "14mm",
+          fontSize: "8px",
+          fontWeight: 700,
+          textTransform: "uppercase",
+          color: "hsl(var(--green-deep))",
+          letterSpacing: "0.08em",
+        }}
+      >
+        Informação Nutricional
+      </span>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "2mm",
+          top: "18.8mm",
+          fontSize: "7px",
+          color: "hsl(var(--muted-foreground))",
+        }}
+      >
+        Porção de 100g
+      </span>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "56mm",
+          top: "18.8mm",
+          width: "8mm",
+          textAlign: "right",
+          fontSize: "7px",
+          color: "hsl(var(--muted-foreground))",
+        }}
+      >
+        %VD*
+      </span>
+
+      {nutritionTable.map((row, i) => (
+        <NutritionRowAbsolute
+          key={row.nutrient}
+          nutrient={row.nutrient}
+          unit={row.unit}
+          per100={row.per100}
+          dv={row.dv}
+          topMm={22 + i * 5.1}
+          last={i === nutritionTable.length - 1}
+        />
+      ))}
+
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "2mm",
+          top: "74mm",
+          width: "60mm",
+          fontSize: "6px",
+          color: "hsl(var(--muted-foreground))",
+        }}
+      >
+        *% Valores Diários com base em uma dieta de 2.000 kcal.
+      </span>
+
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "67mm",
+          top: "14mm",
+          fontSize: "8px",
+          fontWeight: 700,
+          textTransform: "uppercase",
+          color: "hsl(var(--green-deep))",
+          letterSpacing: "0.08em",
+        }}
+      >
+        Comparativo × Alface
+      </span>
+
+      {comparisonData.map((row, i) => (
+        <ComparisonBarAbsolute
+          key={row.label}
+          label={row.label}
+          sunflower={row.sunflower}
+          lettuce={row.lettuce}
+          unit={row.unit}
+          topMm={19 + i * 8.8}
+        />
+      ))}
+
       <div
-        className="absolute left-0 right-0 bottom-0 h-px"
-        style={{ background: "hsl(var(--gold) / 0.5)" }}
+        style={{
+          position: "absolute",
+          left: "0mm",
+          top: "82mm",
+          width: `${NUTRITION_WIDTH_MM}mm`,
+          height: "8mm",
+          borderTop: "0.2mm solid hsl(var(--green-deep) / 0.12)",
+          background: "hsl(var(--green-deep) / 0.08)",
+        }}
       />
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "2mm",
+          top: "84.5mm",
+          fontSize: "6px",
+          color: "hsl(var(--muted-foreground))",
+        }}
+      >
+        Conservar entre 2°C e 8°C
+      </span>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          left: "47mm",
+          top: "84.5mm",
+          fontSize: "6px",
+          color: "hsl(var(--muted-foreground))",
+        }}
+      >
+        🌱 Produto fresco · até 5 dias
+      </span>
+      <span
+        className="font-body"
+        style={{
+          position: "absolute",
+          right: "2mm",
+          top: "84.5mm",
+          fontSize: "6px",
+          color: "hsl(var(--muted-foreground))",
+        }}
+      >
+        Val.: Ver embalagem
+      </span>
     </div>
   );
 }
-
-// ─── Main Packaging Component ─────────────────────────────────────────────────
 
 export default function PackagingSleeve() {
   const sleeveRef = useRef<HTMLDivElement>(null);
@@ -368,123 +620,193 @@ export default function PackagingSleeve() {
 
   const handleExport = useCallback(async () => {
     if (!sleeveRef.current) return;
+
     setExporting(true);
     try {
+      await document.fonts.ready;
+
       const el = sleeveRef.current;
+      const rect = el.getBoundingClientRect();
 
-      // Temporarily remove decorative classes that html2canvas struggles with
-      el.classList.remove("pkg-shadow", "rounded");
-
-      // Use a fixed scale that targets ~300dpi for 33cm x 9cm
-      // 9cm = ~340px on screen, target 1063px → scale ~3.13
-      const scale = 3.13;
+      const targetWidthPx = pxFromMm(CANVAS_WIDTH_MM);
+      const targetHeightPx = pxFromMm(CANVAS_HEIGHT_MM);
+      const scale = targetWidthPx / rect.width;
 
       const canvas = await html2canvas(el, {
         scale,
         useCORS: true,
-        backgroundColor: null,
         logging: false,
-        allowTaint: true,
-        imageTimeout: 15000,
-        width: el.offsetWidth,
-        height: el.offsetHeight,
-        scrollX: 0,
-        scrollY: 0,
+        backgroundColor: "#ffffff",
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
         x: 0,
         y: 0,
-        windowWidth: el.offsetWidth,
-        windowHeight: el.offsetHeight,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: Math.round(rect.width),
+        windowHeight: Math.round(rect.height),
       });
 
-      // Restore classes
-      el.classList.add("pkg-shadow", "rounded");
+      const outputCanvas = document.createElement("canvas");
+      outputCanvas.width = targetWidthPx;
+      outputCanvas.height = targetHeightPx;
+
+      const ctx = outputCanvas.getContext("2d");
+      if (!ctx) throw new Error("Não foi possível gerar o canvas final");
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(canvas, 0, 0, targetWidthPx, targetHeightPx);
 
       const link = document.createElement("a");
-      link.download = "sleeve-microverdes-girassol-300dpi.png";
-      link.href = canvas.toDataURL("image/png");
+      link.download = "sleeve-microverdes-girassol-336x96mm-300dpi.png";
+      link.href = outputCanvas.toDataURL("image/png");
       link.click();
-    } catch (err) {
-      console.error("Export failed:", err);
-      // Restore classes on error too
-      sleeveRef.current?.classList.add("pkg-shadow", "rounded");
+    } catch (error) {
+      console.error("Falha ao exportar PNG:", error);
     } finally {
       setExporting(false);
     }
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-green-light/20 to-cream-dark flex flex-col items-center justify-center py-10 px-4 gap-8">
-      {/* Header */}
-      <div className="text-center animate-fade-up">
-        <p
-          className="font-body uppercase tracking-widest text-muted-foreground mb-1"
-          style={{ fontSize: "9pt", letterSpacing: "0.25em" }}
+    <div
+      style={{
+        background: "linear-gradient(135deg, hsl(var(--background)), hsl(var(--green-light) / 0.2), hsl(var(--cream-dark)))",
+        paddingTop: "24px",
+        paddingBottom: "28px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+      }}
+    >
+      <div id="print-root" style={{ width: "336mm", margin: "0px auto" }}>
+        <div className="screen-only" style={{ marginBottom: "14px", textAlign: "center" }}>
+          <p
+            className="font-body"
+            style={{
+              fontSize: "12px",
+              textTransform: "uppercase",
+              letterSpacing: "0.25em",
+              color: "hsl(var(--muted-foreground))",
+              margin: "0px 0px 6px 0px",
+            }}
+          >
+            Mockup de Embalagem
+          </p>
+          <h2
+            className="font-cursive"
+            style={{
+              fontSize: "44px",
+              color: "hsl(var(--green-deep))",
+              margin: "0px 0px 6px 0px",
+            }}
+          >
+            Sleeve · Microverdes de Girassol
+          </h2>
+          <p
+            className="font-body"
+            style={{
+              fontSize: "12px",
+              color: "hsl(var(--muted-foreground))",
+              margin: "0px",
+            }}
+          >
+            Arquivo fechado de impressão · 336mm × 96mm · 300dpi
+          </p>
+        </div>
+
+        <div className="screen-only" style={{ textAlign: "center", marginBottom: "16px" }}>
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            style={{
+              display: "inline-block",
+              border: "0px",
+              borderRadius: "999px",
+              padding: "10px 18px",
+              fontSize: "14px",
+              fontWeight: 600,
+              fontFamily: "Inter, sans-serif",
+              color: "hsl(var(--gold-light))",
+              background: "var(--pkg-green-gradient)",
+              cursor: exporting ? "not-allowed" : "pointer",
+              opacity: exporting ? 0.6 : 1,
+            }}
+          >
+            <span
+              style={{
+                display: "inline-block",
+                width: "16px",
+                height: "16px",
+                verticalAlign: "-3px",
+                marginRight: "8px",
+              }}
+            >
+              <Download size={16} />
+            </span>
+            {exporting ? "Exportando…" : "Baixar PNG (336×96mm · 300dpi)"}
+          </button>
+        </div>
+
+        <div
+          ref={sleeveRef}
+          id="print-canvas"
+          style={{
+            position: "relative",
+            width: "336mm",
+            height: "96mm",
+            background: "hsl(var(--cream))",
+            overflow: "hidden",
+            boxShadow: "var(--pkg-shadow)",
+          }}
         >
-          Mockup de Embalagem
-        </p>
-        <h2 className="font-cursive text-green-deep" style={{ fontSize: "28pt" }}>
-          Sleeve · Microverdes de Girassol
-        </h2>
-        <p className="font-body text-muted-foreground mt-1" style={{ fontSize: "8pt" }}>
-          33 cm × 9 cm · Caixa plástica clamshell
-        </p>
-      </div>
+          <div
+            style={{
+              position: "absolute",
+              left: "0mm",
+              top: "0mm",
+              width: "336mm",
+              height: "96mm",
+              border: "0.2mm solid hsl(var(--border))",
+            }}
+          />
 
-      {/* Export button */}
-      <button
-        onClick={handleExport}
-        disabled={exporting}
-        className="flex items-center gap-2 px-4 py-2 rounded-full font-body text-sm font-semibold transition-all pkg-green-gradient hover:opacity-90 disabled:opacity-50"
-        style={{ color: "hsl(var(--gold-light))" }}
-      >
-        <Download size={16} />
-        {exporting ? "Exportando…" : "Baixar PNG (300dpi)"}
-      </button>
+          <ArtPanelAbsolute />
+          <SidePanelAbsolute xMm={SIDE_TOP_X_MM} />
+          <NutritionPanelAbsolute />
+          <SidePanelAbsolute xMm={SIDE_BOTTOM_X_MM} />
 
-      {/* Sleeve unfolded — vertical strip (like Mimo) */}
-      <div
-        ref={sleeveRef}
-        className="pkg-shadow rounded overflow-hidden animate-fade-up flex flex-col"
-        style={{ animationDelay: "0.15s" }}
-      >
-        <ArtPanel />
-        <SidePanel label="lateral superior" />
-        <NutritionPanel />
-        <SidePanel label="lateral inferior" />
-      </div>
-
-      {/* Fold guide labels */}
-      <div
-        className="flex flex-col items-center gap-0 animate-fade-up"
-        style={{ animationDelay: "0.3s", width: "9cm" }}
-      >
-        <div className="flex items-center w-full" style={{ height: "13cm" }}>
-          <span className="font-body uppercase text-gold-dark font-semibold" style={{ fontSize: "6pt", letterSpacing: "0.15em", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-            ↑ Topo (arte principal) ↓
-          </span>
+          <div
+            style={{
+              position: "absolute",
+              left: `${SIDE_TOP_X_MM}mm`,
+              top: "0mm",
+              width: "0.2mm",
+              height: "96mm",
+              background: "hsl(var(--green-deep) / 0.24)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              left: `${NUTRITION_X_MM}mm`,
+              top: "0mm",
+              width: "0.2mm",
+              height: "96mm",
+              background: "hsl(var(--green-deep) / 0.24)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              left: `${SIDE_BOTTOM_X_MM}mm`,
+              top: "0mm",
+              width: "0.2mm",
+              height: "96mm",
+              background: "hsl(var(--green-deep) / 0.24)",
+            }}
+          />
         </div>
-        <div className="flex items-center w-full" style={{ height: "3.5cm" }}>
-          <span className="font-body uppercase text-gold-dark" style={{ fontSize: "5pt", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-            Lateral
-          </span>
-        </div>
-        <div className="flex items-center w-full" style={{ height: "13cm" }}>
-          <span className="font-body uppercase text-muted-foreground" style={{ fontSize: "6pt", letterSpacing: "0.15em", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-            ↑ Fundo (info nutricional) ↓
-          </span>
-        </div>
-        <div className="flex items-center w-full" style={{ height: "3.5cm" }}>
-          <span className="font-body uppercase text-gold-dark" style={{ fontSize: "5pt", writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-            Lateral
-          </span>
-        </div>
-      </div>
-
-      {/* Info */}
-      <div className="text-center animate-fade-up" style={{ animationDelay: "0.45s" }}>
-        <p className="font-body text-muted-foreground" style={{ fontSize: "7pt" }}>
-          Arte no topo · Vire 180° na horizontal → Informações nutricionais no fundo
-        </p>
       </div>
     </div>
   );
