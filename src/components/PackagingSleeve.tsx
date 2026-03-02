@@ -131,13 +131,6 @@ function ArtPanel() {
       }}>
         sem agrotóxicos
       </p>
-      <div style={{
-        position: "absolute", left: "22mm", top: "120mm", width: "46mm", height: "5mm",
-        borderRadius: "999px", border: "0.3mm solid hsl(var(--gold) / 0.5)", background: "hsl(var(--gold) / 0.12)",
-        textAlign: "center",
-      }}>
-        <span style={{ fontSize: "7px", color: "hsl(var(--gold-light))", lineHeight: "5mm" }}>🌱 Cultivado com amor</span>
-      </div>
     </div>
   );
 }
